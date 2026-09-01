@@ -1,0 +1,68 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/Hero.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import type { Project } from '../types';
+
+// TODO: Reemplazar con datos reales de tu portfolio
+const featuredProjects: Project[] = [
+  {
+    id: 'proyecto-ejemplo',
+    title: 'Proyecto de Ejemplo',
+    description: 'Un proyecto de edición de video que demuestra nuestras capacidades creativas.',
+    category: 'video',
+    tags: ['After Effects', 'DaVinci Resolve', 'Color Grading'],
+    thumbnail: 'samples/portfolio-thumb',
+    media: [],
+    date: '2024-01-15',
+    featured: true,
+  },
+];
+---
+
+<BaseLayout title="Portfolio — Edición de Video e Imagen">
+  <Hero
+    title="Edición que cuenta historias"
+    subtitle="Transformo ideas en imágenes y videos que conectan con audiencias. Especializado en edición profesional, color grading y motion graphics."
+  />
+
+  <section class="py-20">
+    <div class="container-portfolio">
+      <h2 class="section-title">Proyectos destacados</h2>
+      <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {featuredProjects.map((project) => (
+          <ProjectCard project={project} />
+        ))}
+      </div>
+      <div class="mt-12 text-center">
+        <a href="/projects" class="btn-outline">Ver todos los proyectos</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-white/10 py-20">
+    <div class="container-portfolio">
+      <h2 class="section-title">Habilidades</h2>
+      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-xl border border-white/10 p-6">
+          <h3 class="mb-2 text-lg font-semibold">Edición de Video</h3>
+          <p class="text-sm text-white/60">
+            DaVinci Resolve, Adobe Premiere Pro, Final Cut Pro. Montaje, color grading y corrección de color.
+          </p>
+        </div>
+        <div class="rounded-xl border border-white/10 p-6">
+          <h3 class="mb-2 text-lg font-semibold">Motion Graphics</h3>
+          <p class="text-sm text-white/60">
+            After Effects, animación 2D/3D, títulos cinemáticos y efectos visuales.
+          </p>
+        </div>
+        <div class="rounded-xl border border-white/10 p-6">
+          <h3 class="mb-2 text-lg font-semibold">Edición de Imagen</h3>
+          <p class="text-sm text-white/60">
+            Photoshop, Lightroom, retoque fotográfico, composición y manipulación de imágenes.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

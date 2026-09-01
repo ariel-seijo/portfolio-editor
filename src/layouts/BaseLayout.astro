@@ -1,0 +1,57 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = 'Portfolio de edición de video e imagen' } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <title>{title}</title>
+  </head>
+  <body class="min-h-screen">
+    <nav class="fixed top-0 z-50 w-full border-b border-white/10 bg-dark/80 backdrop-blur-md">
+      <div class="container-portfolio flex h-16 items-center justify-between">
+        <a href="/" class="text-lg font-bold tracking-tight">
+          <span class="gradient-text">Portfolio</span>
+        </a>
+        <div class="flex items-center gap-6">
+          <a href="/projects" class="text-sm text-white/70 transition-colors hover:text-white">
+            Proyectos
+          </a>
+          <a href="/about" class="text-sm text-white/70 transition-colors hover:text-white">
+            Sobre mí
+          </a>
+          <a href="/contact" class="btn-primary text-sm">Contacto</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="pt-16">
+      <slot />
+    </main>
+
+    <footer class="border-t border-white/10 py-8">
+      <div class="container-portfolio text-center text-sm text-white/50">
+        <p>&copy; {new Date().getFullYear()} — Editado con pasión</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>
