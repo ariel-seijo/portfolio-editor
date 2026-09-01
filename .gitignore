@@ -44,6 +44,12 @@ Desktop.ini
 # astro
 .astro/
 
+# AI agent files
+AGENTS.md
+CLAUDE.md
+.atl/
+.opencode/
+
 # turbo
 .turbo/
 
