@@ -3,36 +3,24 @@ const services = [
   {
     id: 'clip-farm',
     title: 'Granja de clips',
-    description: 'Reviso el VOD de tu stream y recorto extraigo todos los clips con potencial para formato reel. Al final, te entrego una carpeta con todos los clips recortados.',
-    deliverable: '/clips-farm.webp',
-    gallery: [],
+    description: 'Reviso el <span class="desc-highlight">VOD de tu stream</span> y extraigo todos los clips con potencial para <span class="desc-highlight">formato reel</span>. Al final, te entrego una carpeta con todos los <span class="desc-highlight">clips recortados</span>.',
   },
   {
     id: 'video-edit',
     title: 'Edición de video',
-    description: 'Convierto tu material en contenido atractivo para YouTube y plataformas de formato corto. Edición dinámica, subtítulos, sound design, transiciones y efectos visuales adaptados a tu estilo.',
-    deliverable: '',
-    gallery: [],
+    description: 'Convierto tu material en contenido atractivo para YouTube y plataformas de formato corto. <span class="desc-highlight">Edición dinámica</span>, <span class="desc-highlight">subtítulos</span>, <span class="desc-highlight">sound design</span>, <span class="desc-highlight">transiciones</span> y <span class="desc-highlight">efectos visuales</span> adaptados a tu estilo.',
   },
   {
     id: 'image-edit',
     title: 'Edición de imagen',
-    description: 'Miniaturas, banners y piezas gráficas diseñadas para destacar tu contenido.',
-    deliverable: '',
-    gallery: [
-      '/miniatura1-header.webp',
-      '/miniatura3-header.webp',
-      '/miniatura6-header.webp',
-      '/miniatura13-header.webp',
-      '/miniatura15-header.webp',
-    ],
+    description: '<span class="desc-highlight">Miniaturas</span>, <span class="desc-highlight">banners</span> y <span class="desc-highlight">piezas gráficas</span> diseñadas para destacar tu contenido.',
   },
 ];
 ---
 
 <section id="servicios" class="services">
   <div class="container-portfolio">
-    <h2 class="section-title">Servicios</h2>
+  <h2 class="section-title">Servicios</h2>
 
     <div class="services-grid">
       <!-- Columna 1: Servicios -->
@@ -55,54 +43,7 @@ const services = [
             class:list={['description-content', { active: index === 0 }]}
             data-description={service.id}
           >
-            <p>{service.description}</p>
-          </div>
-        ))}
-      </div>
-
-      <!-- Columna 3: Entregable -->
-      <div class="services-deliverable">
-        {services.map((service, index) => (
-          <div
-            class:list={['deliverable-content', { active: index === 0 }]}
-            data-deliverable={service.id}
-          >
-            {service.gallery.length > 0 ? (
-              <div class="carousel" data-carousel={service.id}>
-                {service.gallery.map((img, i) => (
-                  <button
-                    class:list={['carousel-slide', { active: i === 0 }]}
-                    data-index={i}
-                    data-lightbox={img}
-                  >
-                    <img
-                      src={img}
-                      alt={`Ejemplo ${i + 1} de ${service.title}`}
-                      class="carousel-image"
-                      loading={i === 0 ? 'eager' : 'lazy'}
-                      decoding="async"
-                    />
-                  </button>
-                ))}
-                <div class="carousel-dots">
-                  {service.gallery.map((_, i) => (
-                    <span class:list={['carousel-dot', { active: i === 0 }]} data-dot={i}></span>
-                  ))}
-                </div>
-              </div>
-            ) : service.deliverable ? (
-              <button class="deliverable-image-btn" data-lightbox={service.deliverable}>
-                <img
-                  src={service.deliverable}
-                  alt={`Ejemplo de ${service.title}`}
-                  class="deliverable-image"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </button>
-            ) : (
-              <p class="deliverable-placeholder">Próximamente</p>
-            )}
+            <p set:html={service.description}></p>
           </div>
         ))}
       </div>
@@ -110,17 +51,10 @@ const services = [
   </div>
 </section>
 
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox" aria-hidden="true">
-  <button class="lightbox-close" aria-label="Cerrar vista previa">&times;</button>
-  <img class="lightbox-image" src="" alt="" />
-</div>
-
 <script>
   function initServices() {
     const cards = document.querySelectorAll('.service-card');
     const descriptions = document.querySelectorAll('.description-content');
-    const deliverables = document.querySelectorAll('.deliverable-content');
 
     cards.forEach((card) => {
       card.addEventListener('click', () => {
@@ -134,102 +68,7 @@ const services = [
         descriptions.forEach((d) => {
           d.classList.toggle('active', d.getAttribute('data-description') === serviceId);
         });
-
-        // Update deliverables
-        deliverables.forEach((d) => {
-          d.classList.toggle('active', d.getAttribute('data-deliverable') === serviceId);
-        });
       });
-    });
-
-    // Lightbox
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImage = lightbox?.querySelector('.lightbox-image');
-    const lightboxClose = lightbox?.querySelector('.lightbox-close');
-
-    function openLightbox(src: string) {
-      if (lightbox && lightboxImage && src) {
-        lightboxImage.setAttribute('src', src);
-        lightbox.setAttribute('aria-hidden', 'false');
-        lightbox.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      }
-    }
-
-    function closeLightbox() {
-      if (lightbox) {
-        lightbox.setAttribute('aria-hidden', 'true');
-        lightbox.classList.remove('open');
-        document.body.style.overflow = '';
-        lightboxImage?.setAttribute('src', '');
-      }
-    }
-
-    document.querySelectorAll('[data-lightbox]').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const src = btn.getAttribute('data-lightbox');
-        if (src) openLightbox(src);
-      });
-    });
-
-    lightboxClose?.addEventListener('click', closeLightbox);
-    lightbox?.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeLightbox();
-    });
-
-    // Carousel
-    document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((carousel) => {
-      const slides = carousel.querySelectorAll('.carousel-slide');
-      const dots = carousel.querySelectorAll('.carousel-dot');
-      let current = 0;
-      let interval: ReturnType<typeof setInterval>;
-      let paused = false;
-
-      function goTo(index: number) {
-        slides[current].classList.remove('active');
-        dots[current].classList.remove('active');
-        current = index;
-        slides[current].classList.add('active');
-        dots[current].classList.add('active');
-      }
-
-      function next() {
-        goTo((current + 1) % slides.length);
-      }
-
-      function start() {
-        interval = setInterval(next, 2000);
-      }
-
-      function stop() {
-        clearInterval(interval);
-      }
-
-      // Pause on click
-      carousel.addEventListener('click', () => {
-        if (!paused) {
-          stop();
-          paused = true;
-          carousel.classList.add('paused');
-        }
-      });
-
-      // Dot navigation
-      dots.forEach((dot, i) => {
-        dot.addEventListener('click', (e) => {
-          e.stopPropagation();
-          stop();
-          goTo(i);
-          paused = true;
-          carousel.classList.add('paused');
-        });
-      });
-
-      start();
     });
   }
 
@@ -243,35 +82,46 @@ const services = [
 <style>
   .services {
     padding: 6rem 0;
+    text-align: center;
   }
 
   .services-grid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 0;
+    max-width: 72rem;
+    margin-inline: auto;
   }
 
   /* Columna 1: Lista de servicios */
   .services-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    margin-inline: auto;
+    width: 100%;
   }
 
   .service-card {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
-    padding: 1.25rem 1.5rem;
+    padding: 1.5rem;
     background: transparent;
     border: 1px solid rgb(255 255 255 / 0.08);
-    border-radius: 0.75rem;
+    border-radius: 0;
+    margin-bottom: -1px;
     color: rgb(255 255 255 / 0.5);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-align: left;
     width: 100%;
     font-family: inherit;
+    z-index: 1;
+  }
+
+  .service-card.active {
+    z-index: 2;
   }
 
   .service-card:hover {
@@ -280,8 +130,8 @@ const services = [
   }
 
   .service-card.active {
-    border-color: var(--color-accent);
-    background: rgb(139 92 246 / 0.08);
+    border-color: #fafafa;
+    background: rgb(255 255 255 / 0.08);
     color: white;
   }
 
@@ -293,7 +143,7 @@ const services = [
   }
 
   .service-card.active .service-number {
-    color: var(--color-accent-light);
+    color: #ffffff;
     opacity: 1;
   }
 
@@ -305,196 +155,41 @@ const services = [
   /* Columna 2: Descripción */
   .services-description {
     position: relative;
-    min-height: 120px;
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .description-content {
     position: absolute;
     inset: 0;
+    display: flex;
+    align-items: center;
     opacity: 0;
     visibility: hidden;
     transform: translateY(8px);
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
   }
 
   .description-content.active {
-    position: relative;
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
   }
 
   .description-content p {
-    font-size: 1rem;
+    font-size: 1.25rem;
     line-height: 1.7;
     color: rgb(255 255 255 / 0.65);
+    max-width: 40rem;
+    margin-inline: 0;
+    text-align: left;
   }
 
-  /* Columna 3: Entregable */
-  .services-deliverable {
-    position: relative;
-    min-height: 120px;
-  }
-
-  .deliverable-content {
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(8px);
-    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  .deliverable-content.active {
-    position: relative;
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  .deliverable-placeholder {
-    font-size: 0.875rem;
-    color: rgb(255 255 255 / 0.25);
-    font-style: italic;
-  }
-
-  /* Entregable — imagen */
-  .deliverable-image-btn {
-    display: block;
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    transition: opacity 0.3s;
-  }
-
-  .deliverable-image-btn:hover {
-    opacity: 0.85;
-  }
-
-  .deliverable-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    border-radius: 0.5rem;
-    border: 1px solid rgb(255 255 255 / 0.08);
-  }
-
-  /* Carousel */
-  .carousel {
-    position: relative;
-    width: 100%;
-    border-radius: 0.5rem;
-    overflow: hidden;
-    border: 1px solid rgb(255 255 255 / 0.08);
-  }
-
-  .carousel-slide {
-    display: block;
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    opacity: 0;
-    position: absolute;
-    inset: 0;
-    transition: opacity 0.5s ease-in-out;
-  }
-
-  .carousel-slide.active {
-    position: relative;
-    opacity: 1;
-  }
-
-  .carousel-image {
-    width: 100%;
-    height: auto;
-    display: block;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
-  }
-
-  .carousel-dots {
-    position: absolute;
-    bottom: 0.75rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 0.5rem;
-    z-index: 5;
-  }
-
-  .carousel-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: rgb(255 255 255 / 0.3);
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .carousel-dot.active {
-    background: white;
-    transform: scale(1.3);
-  }
-
-  .carousel.paused .carousel-dot {
-    cursor: pointer;
-  }
-
-  /* Lightbox */
-  .lightbox {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgb(0 0 0 / 0.9);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s;
-    cursor: zoom-out;
-  }
-
-  .lightbox.open {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .lightbox-close {
-    position: absolute;
-    top: 1.5rem;
-    right: 1.5rem;
-    background: none;
-    border: none;
-    color: white;
-    font-size: 2rem;
-    cursor: pointer;
-    line-height: 1;
-    opacity: 0.6;
-    transition: opacity 0.2s;
-  }
-
-  .lightbox-close:hover {
-    opacity: 1;
-  }
-
-  .lightbox-image {
-    max-width: 90vw;
-    max-height: 90vh;
-    object-fit: contain;
-    border-radius: 0.5rem;
-    transform: scale(0.95);
-    transition: transform 0.3s;
-  }
-
-  .lightbox.open .lightbox-image {
-    transform: scale(1);
+  .description-content .desc-highlight {
+    color: #ffffff;
+    font-weight: 700;
   }
 
   /* ════════════════════════════════════════
@@ -502,17 +197,22 @@ const services = [
      ════════════════════════════════════════ */
   @media (min-width: 768px) {
     .services-grid {
-      grid-template-columns: 280px 1fr 1fr;
+      grid-template-columns: 280px 1fr;
       gap: 3rem;
       align-items: start;
     }
 
     .service-card {
       padding: 1.5rem 1.75rem;
+      justify-content: flex-start;
     }
 
     .service-name {
       font-size: 1.125rem;
+    }
+
+    .services-list {
+      margin-inline: 0;
     }
   }
 
@@ -524,13 +224,10 @@ const services = [
       padding: 4rem 0;
     }
 
-    .services-grid {
-      gap: 2.5rem;
-    }
-
     .services-description {
       order: -1;
       min-height: auto;
+      padding-bottom: 2rem;
     }
 
     .description-content {
@@ -538,18 +235,6 @@ const services = [
     }
 
     .description-content:not(.active) {
-      display: none;
-    }
-
-    .services-deliverable {
-      min-height: auto;
-    }
-
-    .deliverable-content {
-      position: relative;
-    }
-
-    .deliverable-content:not(.active) {
       display: none;
     }
   }
