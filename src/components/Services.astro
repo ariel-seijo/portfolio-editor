@@ -5,18 +5,27 @@ const services = [
     title: 'Granja de clips',
     description: 'Reviso el VOD de tu stream y recorto extraigo todos los clips con potencial para formato reel. Al final, te entrego una carpeta con todos los clips recortados.',
     deliverable: '/clips-farm.webp',
+    gallery: [],
   },
   {
     id: 'video-edit',
     title: 'Edición de video',
     description: 'Convierto tu material en contenido atractivo para YouTube y plataformas de formato corto. Edición dinámica, subtítulos, sound design, transiciones y efectos visuales adaptados a tu estilo.',
     deliverable: '',
+    gallery: [],
   },
   {
     id: 'image-edit',
     title: 'Edición de imagen',
     description: 'Miniaturas, banners y piezas gráficas diseñadas para destacar tu contenido.',
     deliverable: '',
+    gallery: [
+      '/miniatura1-header.webp',
+      '/miniatura3-header.webp',
+      '/miniatura6-header.webp',
+      '/miniatura13-header.webp',
+      '/miniatura15-header.webp',
+    ],
   },
 ];
 ---
@@ -58,7 +67,30 @@ const services = [
             class:list={['deliverable-content', { active: index === 0 }]}
             data-deliverable={service.id}
           >
-            {service.deliverable ? (
+            {service.gallery.length > 0 ? (
+              <div class="carousel" data-carousel={service.id}>
+                {service.gallery.map((img, i) => (
+                  <button
+                    class:list={['carousel-slide', { active: i === 0 }]}
+                    data-index={i}
+                    data-lightbox={img}
+                  >
+                    <img
+                      src={img}
+                      alt={`Ejemplo ${i + 1} de ${service.title}`}
+                      class="carousel-image"
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  </button>
+                ))}
+                <div class="carousel-dots">
+                  {service.gallery.map((_, i) => (
+                    <span class:list={['carousel-dot', { active: i === 0 }]} data-dot={i}></span>
+                  ))}
+                </div>
+              </div>
+            ) : service.deliverable ? (
               <button class="deliverable-image-btn" data-lightbox={service.deliverable}>
                 <img
                   src={service.deliverable}
@@ -115,26 +147,31 @@ const services = [
     const lightboxImage = lightbox?.querySelector('.lightbox-image');
     const lightboxClose = lightbox?.querySelector('.lightbox-close');
 
-    document.querySelectorAll('.deliverable-image-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        const src = btn.getAttribute('data-lightbox');
-        if (lightbox && lightboxImage && src) {
-          lightboxImage.setAttribute('src', src);
-          lightbox.setAttribute('aria-hidden', 'false');
-          lightbox.classList.add('open');
-          document.body.style.overflow = 'hidden';
-        }
-      });
-    });
+    function openLightbox(src: string) {
+      if (lightbox && lightboxImage && src) {
+        lightboxImage.setAttribute('src', src);
+        lightbox.setAttribute('aria-hidden', 'false');
+        lightbox.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+    }
 
-    const closeLightbox = () => {
+    function closeLightbox() {
       if (lightbox) {
         lightbox.setAttribute('aria-hidden', 'true');
         lightbox.classList.remove('open');
         document.body.style.overflow = '';
         lightboxImage?.setAttribute('src', '');
       }
-    };
+    }
+
+    document.querySelectorAll('[data-lightbox]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const src = btn.getAttribute('data-lightbox');
+        if (src) openLightbox(src);
+      });
+    });
 
     lightboxClose?.addEventListener('click', closeLightbox);
     lightbox?.addEventListener('click', (e) => {
@@ -142,6 +179,57 @@ const services = [
     });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeLightbox();
+    });
+
+    // Carousel
+    document.querySelectorAll<HTMLElement>('[data-carousel]').forEach((carousel) => {
+      const slides = carousel.querySelectorAll('.carousel-slide');
+      const dots = carousel.querySelectorAll('.carousel-dot');
+      let current = 0;
+      let interval: ReturnType<typeof setInterval>;
+      let paused = false;
+
+      function goTo(index: number) {
+        slides[current].classList.remove('active');
+        dots[current].classList.remove('active');
+        current = index;
+        slides[current].classList.add('active');
+        dots[current].classList.add('active');
+      }
+
+      function next() {
+        goTo((current + 1) % slides.length);
+      }
+
+      function start() {
+        interval = setInterval(next, 2000);
+      }
+
+      function stop() {
+        clearInterval(interval);
+      }
+
+      // Pause on click
+      carousel.addEventListener('click', () => {
+        if (!paused) {
+          stop();
+          paused = true;
+          carousel.classList.add('paused');
+        }
+      });
+
+      // Dot navigation
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          stop();
+          goTo(i);
+          paused = true;
+          carousel.classList.add('paused');
+        });
+      });
+
+      start();
     });
   }
 
@@ -293,6 +381,69 @@ const services = [
     display: block;
     border-radius: 0.5rem;
     border: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  /* Carousel */
+  .carousel {
+    position: relative;
+    width: 100%;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  .carousel-slide {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+    position: absolute;
+    inset: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+
+  .carousel-slide.active {
+    position: relative;
+    opacity: 1;
+  }
+
+  .carousel-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  .carousel-dots {
+    position: absolute;
+    bottom: 0.75rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0.5rem;
+    z-index: 5;
+  }
+
+  .carousel-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.3);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .carousel-dot.active {
+    background: white;
+    transform: scale(1.3);
+  }
+
+  .carousel.paused .carousel-dot {
+    cursor: pointer;
   }
 
   /* Lightbox */
