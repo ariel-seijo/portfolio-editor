@@ -1,0 +1,92 @@
+---
+interface Props {
+  direction?: 'left' | 'right';
+  speed?: number;
+  rotation?: number;
+  boxes?: string[];
+  className?: string;
+  mobileVisible?: boolean;
+}
+
+const {
+  direction = 'left',
+  speed = 40,
+  rotation = 0,
+  boxes = [],
+  className = '',
+  mobileVisible = true,
+} = Astro.props;
+
+const directionClass = direction === 'right' ? 'marquee-scroll--reverse' : 'marquee-scroll--normal';
+---
+
+<div
+  class:list={[
+    'marquee-row',
+    !mobileVisible && 'marquee-row--hide-mobile',
+    className,
+  ]}
+  style={`--scroll-duration: ${speed}s; --row-rotation: ${rotation}deg;`}
+>
+  <div class:list={['marquee-track', directionClass]}>
+    <Fragment set:html={boxes.join('')} />
+    <Fragment set:html={boxes.join('')} />
+  </div>
+</div>
+
+<style>
+  .marquee-row {
+    width: 100vw;
+    overflow: hidden;
+    flex-shrink: 0;
+    transform: rotate(var(--row-rotation, 0deg));
+    will-change: transform;
+  }
+
+  .marquee-row--hide-mobile {
+    display: none;
+  }
+
+  @media (min-width: 768px) {
+    .marquee-row--hide-mobile {
+      display: block;
+    }
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: 1rem;
+    width: max-content;
+    will-change: transform;
+  }
+
+  .marquee-scroll--normal {
+    animation: marquee-scroll var(--scroll-duration, 40s) linear infinite;
+  }
+
+  .marquee-scroll--reverse {
+    animation: marquee-scroll-reverse var(--scroll-duration, 40s) linear infinite;
+  }
+
+  .marquee-row:hover .marquee-track {
+    animation-play-state: paused;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes marquee-scroll-reverse {
+    from {
+      transform: translateX(-50%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+</style>

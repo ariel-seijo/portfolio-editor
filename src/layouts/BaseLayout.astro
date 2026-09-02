@@ -2,9 +2,14 @@
 interface Props {
   title: string;
   description?: string;
+  fullHeight?: boolean;
 }
 
-const { title, description = 'Portfolio de edición de video e imagen' } = Astro.props;
+const {
+  title,
+  description = 'Portfolio de edición de video e imagen',
+  fullHeight = false,
+} = Astro.props;
 ---
 
 <!doctype html>
@@ -40,7 +45,7 @@ const { title, description = 'Portfolio de edición de video e imagen' } = Astro
       </div>
     </nav>
 
-    <main class="pt-16">
+    <main class:list={[!fullHeight && 'pt-16']}>
       <slot />
     </main>
 

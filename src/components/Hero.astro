@@ -1,18 +1,214 @@
 ---
-interface Props {
-  title: string;
-  subtitle?: string;
+import MarqueeRow from './MarqueeRow.astro';
+
+// ── 15 imágenes disponibles: 1-8 y 10-16 (no existe la9) ──
+const IMAGES = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16];
+
+// ── Fisher-Yates shuffle ──
+function shuffle<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
 }
 
-const { title, subtitle } = Astro.props;
+// ── Box helper ──
+const box = (n: number) =>
+  `<div class="w-[26rem] aspect-video overflow-hidden"><img src="/miniatura${n}-header.webp" alt="" width="1040" height="585" loading="lazy" decoding="async" class="block w-full h-full" style="aspect-ratio:16/9;object-fit:cover" /></div>`;
+
+// ── Generar filas: cada fila baraja las 15 imágenes y toma 8 ──
+const makeRow = () => shuffle(IMAGES).slice(0, 8).map(box);
+
+const row1Boxes = makeRow();
+const row2Boxes = makeRow();
+const row3Boxes = makeRow();
+const row4Boxes = makeRow();
+const row5Boxes = makeRow();
+const row6Boxes = makeRow();
+const row7Boxes = makeRow();
 ---
 
-<section class="py-20">
-  <div class="container-portfolio">
-    <div class="max-w-3xl">
-      <h1 class="section-title">{title}</h1>
-      {subtitle && <p class="text-lg text-white/60">{subtitle}</p>}
-    </div>
-    <slot />
+<!-- ═══════════════════════════════════════════════════════════════
+     HERO — Wall of content in motion
+     ═══════════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <!-- Background: 7 marquee rows -->
+  <div class="hero-marquee" aria-hidden="true">
+    <MarqueeRow direction="left" speed={160} rotation={-2} boxes={row1Boxes} />
+    <MarqueeRow direction="right" speed={160} rotation={-2} boxes={row2Boxes} />
+    <MarqueeRow direction="left" speed={160} rotation={-2} boxes={row3Boxes} />
+    <MarqueeRow direction="right" speed={160} rotation={-2} boxes={row4Boxes} />
+    <MarqueeRow direction="left" speed={160} rotation={-2} boxes={row5Boxes} />
+    <MarqueeRow direction="right" speed={160} rotation={-2} boxes={row6Boxes} />
+    <MarqueeRow direction="left" speed={160} rotation={-2} boxes={row7Boxes} mobileVisible={false} />
+  </div>
+
+  <!-- Uniform overlay for readability -->
+  <div class="hero-overlay" aria-hidden="true"></div>
+
+  <!-- Central content (fixed on top) -->
+  <div class="hero-content">
+    <p class="hero-label">VIDEO EDITOR &nbsp;/&nbsp; VISUAL DESIGNER</p>
+    <h1 class="hero-title">GLASSITO</h1>
+    <a href="#portfolio" class="hero-cta">
+      VIEW MY WORK
+      <svg class="hero-cta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+      </svg>
+    </a>
   </div>
 </section>
+
+<style>
+  /* ════════════════════════════════════════
+     Hero container
+     ════════════════════════════════════════ */
+  .hero {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    min-height: 600px;
+    overflow: hidden;
+    background: #050507;
+  }
+
+  /* ════════════════════════════════════════
+     Marquee background — absolute on desktop
+     ════════════════════════════════════════ */
+  .hero-marquee {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    opacity: 0.85;
+    overflow: hidden;
+  }
+
+  /* ════════════════════════════════════════
+     Overlay — uniform black for readability
+     ════════════════════════════════════════ */
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: rgba(5, 5, 7, 0.65);
+  }
+
+  /* ════════════════════════════════════════
+     Central content
+     ════════════════════════════════════════ */
+  .hero-content {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .hero-label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.35em;
+    color: rgb(255 255 255 / 0.45);
+    margin-bottom: 1.25rem;
+    opacity: 0;
+    animation: fade-in 1s ease-out 0.3s forwards;
+  }
+
+  .hero-title {
+    font-size: clamp(3.5rem, 12vw, 9rem);
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+    color: white;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fade-in 1s ease-out 0.5s forwards;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+    border-radius: 9999px;
+    padding: 0.875rem 2rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    color: white;
+    text-decoration: none;
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    animation: fade-in 1s ease-out 0.7s forwards;
+  }
+
+  .hero-cta:hover {
+    background: rgb(255 255 255 / 0.08);
+    border-color: rgb(255 255 255 / 0.35);
+    transform: translateY(-2px);
+  }
+
+  .hero-cta-icon {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero-cta:hover .hero-cta-icon {
+    transform: translateX(4px);
+  }
+
+  /* ════════════════════════════════════════
+     Keyframes
+     ════════════════════════════════════════ */
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ════════════════════════════════════════
+     Responsive — mobile
+     ════════════════════════════════════════ */
+  @media (max-width: 767px) {
+    .hero-marquee {
+      position: relative;
+      height: 100%;
+      opacity: 0.6;
+    }
+
+    .hero-content {
+      position: absolute;
+    }
+
+    .hero-label {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+    }
+
+    .hero-title {
+      font-size: clamp(2.8rem, 14vw, 5rem);
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-cta {
+      font-size: 0.65rem;
+      padding: 0.75rem 1.5rem;
+    }
+  }
+</style>
