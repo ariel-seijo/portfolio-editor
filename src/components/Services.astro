@@ -1,0 +1,277 @@
+---
+const services = [
+  {
+    id: 'clip-farm',
+    title: 'Granja de clips',
+    description: 'Reviso el VOD de tu stream y recorto extraigo todos los clips con potencial para formato reel. Al final, te entrego una carpeta con todos los clips recortados.',
+    deliverable: '',
+  },
+  {
+    id: 'video-edit',
+    title: 'Edición de video',
+    description: 'Convierto tu material en contenido atractivo para YouTube y plataformas de formato corto. Edición dinámica, subtítulos, sound design, transiciones y efectos visuales adaptados a tu estilo.',
+    deliverable: '',
+  },
+  {
+    id: 'image-edit',
+    title: 'Edición de imagen',
+    description: 'Miniaturas, banners y piezas gráficas diseñadas para destacar tu contenido.',
+    deliverable: '',
+  },
+];
+---
+
+<section id="servicios" class="services">
+  <div class="container-portfolio">
+    <h2 class="section-title">Servicios</h2>
+
+    <div class="services-grid">
+      <!-- Columna 1: Servicios -->
+      <div class="services-list">
+        {services.map((service, index) => (
+          <button
+            class:list={['service-card', { active: index === 0 }]}
+            data-service={service.id}
+          >
+            <span class="service-number">0{index + 1}</span>
+            <span class="service-name">{service.title}</span>
+          </button>
+        ))}
+      </div>
+
+      <!-- Columna 2: Descripción -->
+      <div class="services-description">
+        {services.map((service, index) => (
+          <div
+            class:list={['description-content', { active: index === 0 }]}
+            data-description={service.id}
+          >
+            <p>{service.description}</p>
+          </div>
+        ))}
+      </div>
+
+      <!-- Columna 3: Entregable -->
+      <div class="services-deliverable">
+        {services.map((service, index) => (
+          <div
+            class:list={['deliverable-content', { active: index === 0 }]}
+            data-deliverable={service.id}
+          >
+            <p class="deliverable-placeholder">Próximamente</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  function initServices() {
+    const cards = document.querySelectorAll('.service-card');
+    const descriptions = document.querySelectorAll('.description-content');
+    const deliverables = document.querySelectorAll('.deliverable-content');
+
+    cards.forEach((card) => {
+      card.addEventListener('click', () => {
+        const serviceId = card.getAttribute('data-service');
+
+        // Update cards
+        cards.forEach((c) => c.classList.remove('active'));
+        card.classList.add('active');
+
+        // Update descriptions
+        descriptions.forEach((d) => {
+          d.classList.toggle('active', d.getAttribute('data-description') === serviceId);
+        });
+
+        // Update deliverables
+        deliverables.forEach((d) => {
+          d.classList.toggle('active', d.getAttribute('data-deliverable') === serviceId);
+        });
+      });
+    });
+  }
+
+  // Run on page load
+  document.addEventListener('DOMContentLoaded', initServices);
+
+  // Run on View Transitions navigation
+  document.addEventListener('astro:after-swap', initServices);
+</script>
+
+<style>
+  .services {
+    padding: 6rem 0;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+
+  /* Columna 1: Lista de servicios */
+  .services-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .service-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: transparent;
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: 0.75rem;
+    color: rgb(255 255 255 / 0.5);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+  }
+
+  .service-card:hover {
+    border-color: rgb(255 255 255 / 0.15);
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .service-card.active {
+    border-color: var(--color-accent);
+    background: rgb(139 92 246 / 0.08);
+    color: white;
+  }
+
+  .service-number {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    opacity: 0.4;
+  }
+
+  .service-card.active .service-number {
+    color: var(--color-accent-light);
+    opacity: 1;
+  }
+
+  .service-name {
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  /* Columna 2: Descripción */
+  .services-description {
+    position: relative;
+    min-height: 120px;
+  }
+
+  .description-content {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .description-content.active {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .description-content p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: rgb(255 255 255 / 0.65);
+  }
+
+  /* Columna 3: Entregable */
+  .services-deliverable {
+    position: relative;
+    min-height: 120px;
+  }
+
+  .deliverable-content {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .deliverable-content.active {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .deliverable-placeholder {
+    font-size: 0.875rem;
+    color: rgb(255 255 255 / 0.25);
+    font-style: italic;
+  }
+
+  /* ════════════════════════════════════════
+     Responsive — Desktop
+     ════════════════════════════════════════ */
+  @media (min-width: 768px) {
+    .services-grid {
+      grid-template-columns: 280px 1fr 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .service-card {
+      padding: 1.5rem 1.75rem;
+    }
+
+    .service-name {
+      font-size: 1.125rem;
+    }
+  }
+
+  /* ════════════════════════════════════════
+     Responsive — Mobile
+     ════════════════════════════════════════ */
+  @media (max-width: 767px) {
+    .services {
+      padding: 4rem 0;
+    }
+
+    .services-grid {
+      gap: 2.5rem;
+    }
+
+    .services-description {
+      order: -1;
+      min-height: auto;
+    }
+
+    .description-content {
+      position: relative;
+    }
+
+    .description-content:not(.active) {
+      display: none;
+    }
+
+    .services-deliverable {
+      min-height: auto;
+    }
+
+    .deliverable-content {
+      position: relative;
+    }
+
+    .deliverable-content:not(.active) {
+      display: none;
+    }
+  }
+</style>
