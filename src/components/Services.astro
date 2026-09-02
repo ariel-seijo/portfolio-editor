@@ -4,7 +4,7 @@ const services = [
     id: 'clip-farm',
     title: 'Granja de clips',
     description: 'Reviso el VOD de tu stream y recorto extraigo todos los clips con potencial para formato reel. Al final, te entrego una carpeta con todos los clips recortados.',
-    deliverable: '',
+    deliverable: '/clips-farm.webp',
   },
   {
     id: 'video-edit',
@@ -58,13 +58,31 @@ const services = [
             class:list={['deliverable-content', { active: index === 0 }]}
             data-deliverable={service.id}
           >
-            <p class="deliverable-placeholder">Próximamente</p>
+            {service.deliverable ? (
+              <button class="deliverable-image-btn" data-lightbox={service.deliverable}>
+                <img
+                  src={service.deliverable}
+                  alt={`Ejemplo de ${service.title}`}
+                  class="deliverable-image"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+            ) : (
+              <p class="deliverable-placeholder">Próximamente</p>
+            )}
           </div>
         ))}
       </div>
     </div>
   </div>
 </section>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lightbox-close" aria-label="Cerrar vista previa">&times;</button>
+  <img class="lightbox-image" src="" alt="" />
+</div>
 
 <script>
   function initServices() {
@@ -90,6 +108,40 @@ const services = [
           d.classList.toggle('active', d.getAttribute('data-deliverable') === serviceId);
         });
       });
+    });
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = lightbox?.querySelector('.lightbox-image');
+    const lightboxClose = lightbox?.querySelector('.lightbox-close');
+
+    document.querySelectorAll('.deliverable-image-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const src = btn.getAttribute('data-lightbox');
+        if (lightbox && lightboxImage && src) {
+          lightboxImage.setAttribute('src', src);
+          lightbox.setAttribute('aria-hidden', 'false');
+          lightbox.classList.add('open');
+          document.body.style.overflow = 'hidden';
+        }
+      });
+    });
+
+    const closeLightbox = () => {
+      if (lightbox) {
+        lightbox.setAttribute('aria-hidden', 'true');
+        lightbox.classList.remove('open');
+        document.body.style.overflow = '';
+        lightboxImage?.setAttribute('src', '');
+      }
+    };
+
+    lightboxClose?.addEventListener('click', closeLightbox);
+    lightbox?.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeLightbox();
     });
   }
 
@@ -216,6 +268,82 @@ const services = [
     font-size: 0.875rem;
     color: rgb(255 255 255 / 0.25);
     font-style: italic;
+  }
+
+  /* Entregable — imagen */
+  .deliverable-image-btn {
+    display: block;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    transition: opacity 0.3s;
+  }
+
+  .deliverable-image-btn:hover {
+    opacity: 0.85;
+  }
+
+  .deliverable-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 0.5rem;
+    border: 1px solid rgb(255 255 255 / 0.08);
+  }
+
+  /* Lightbox */
+  .lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(0 0 0 / 0.9);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s;
+    cursor: zoom-out;
+  }
+
+  .lightbox.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+
+  .lightbox-close:hover {
+    opacity: 1;
+  }
+
+  .lightbox-image {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    transform: scale(0.95);
+    transition: transform 0.3s;
+  }
+
+  .lightbox.open .lightbox-image {
+    transform: scale(1);
   }
 
   /* ════════════════════════════════════════
