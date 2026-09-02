@@ -35,7 +35,7 @@ const categories = ['all', 'video', 'image', 'both'] as const;
           <button
             data-filter={cat}
             class="filter-btn rounded-full border border-white/20 px-4 py-2 text-sm font-medium transition-all hover:border-white/40 hover:bg-white/10"
-            class:list={[cat === 'all' && 'border-violet-500 bg-violet-500/20']}
+            class:list={[cat === 'all' && 'border-white bg-white/20']}
           >
             {cat === 'all' ? 'Todos' : cat === 'both' ? 'Video + Imagen' : cat === 'video' ? 'Video' : 'Imagen'}
           </button>
@@ -69,10 +69,11 @@ const categories = ['all', 'video', 'image', 'both'] as const;
         const filter = btn.dataset.filter;
 
         buttons.forEach((b) => {
-          b.classList.remove('border-violet-500', 'bg-violet-500/20');
+          b.classList.remove('border-white');
+          b.classList.remove('bg-white/20');
           b.classList.add('border-white/20');
         });
-        btn.classList.add('border-violet-500', 'bg-violet-500/20');
+        btn.classList.add('border-white', 'bg-white/20');
         btn.classList.remove('border-white/20');
 
         let visibleCount = 0;
