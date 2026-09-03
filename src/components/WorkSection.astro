@@ -1,24 +1,52 @@
 ---
 // ── Videos largos (YouTube, 16:9) ──
 const longVideos = [
-  { id: 'B4InDxU87Y4', title: 'Video 1' },
-  { id: 'kF3KOmVTnZQ', title: 'Video 2' },
-  { id: 'bj-riu4WUcs', title: 'Video 3' },
-  { id: 'V4o4joMWcCg', title: 'Video 4' },
-  { id: 'TIDUTCgsnsY', title: 'Video 5' },
+  { id: "B4InDxU87Y4", title: "Video 1" },
+  { id: "kF3KOmVTnZQ", title: "Video 2" },
+  { id: "bj-riu4WUcs", title: "Video 3" },
+  { id: "V4o4joMWcCg", title: "Video 4" },
+  { id: "TIDUTCgsnsY", title: "Video 5" },
+  { id: "Emz0ZcjAc44", title: "Video 6" },
 ];
 
 // ── Shorts (TikTok) ──
 const shorts = [
-  { embedUrl: 'https://www.tiktok.com/embed/v2/7658571262309960981', title: 'Short TikTok' },
-  { embedUrl: 'https://www.tiktok.com/embed/v2/7657787702661631253', title: 'Short TikTok' },
-  { embedUrl: 'https://www.tiktok.com/embed/v2/7516683055780678918', title: 'Short TikTok' },
-  { embedUrl: 'https://www.tiktok.com/embed/v2/7615746755413429524', title: 'Short TikTok' },
-  { embedUrl: 'https://www.tiktok.com/embed/v2/7581146015777033502', title: 'Short TikTok' },
+  {
+    embedUrl: "https://www.tiktok.com/embed/v2/7658571262309960981",
+    title: "Short TikTok",
+  },
+  {
+    embedUrl: "https://www.tiktok.com/embed/v2/7618337523265326357",
+    title: "Short TikTok",
+  },
+  {
+    embedUrl: "https://www.tiktok.com/embed/v2/7516683055780678918",
+    title: "Short TikTok",
+  },
+  {
+    embedUrl: "https://www.tiktok.com/embed/v2/7615746755413429524",
+    title: "Short TikTok",
+  },
+  {
+    embedUrl: "https://www.tiktok.com/embed/v2/7581146015777033502",
+    title: "Short TikTok",
+  },
+  {
+    embedUrl: "https://www.tiktok.com/embed/v2/7669617016982097173",
+    title: "Short TikTok",
+  },
+  {
+    embedUrl: "https://www.tiktok.com/embed/v2/7657787702661631253",
+    title: "Short TikTok",
+  },
+  {
+    embedUrl: "https://www.tiktok.com/embed/v2/7610846858809789726",
+    title: "Short TikTok",
+  },
 ];
 
-// ── Miniaturas (16:9) — existen 1-8, 10 y 11 ──
-const thumbnails = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11];
+// ── Miniaturas (16:9) — existen 1-16 ──
+const thumbnails = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
 const box = (n: number) =>
   `<div class="w-full aspect-video overflow-hidden rounded-lg border border-white/10"><img src="/miniatura${n}-header.webp" alt="" width="1040" height="585" loading="lazy" decoding="async" class="block w-full h-full" style="aspect-ratio:16/9;object-fit:cover" /></div>`;
@@ -31,45 +59,117 @@ const box = (n: number) =>
     <!-- ── Videos largos ── -->
     <h3 class="work-subtitle">Videos largos</h3>
     <div class="work-grid">
-      {longVideos.map((video) => (
-        <div class="work-item aspect-video">
-          <iframe
-            src={`https://www.youtube.com/embed/${video.id}?rel=0`}
-            title={video.title}
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          ></iframe>
-        </div>
-      ))}
+      {
+        longVideos.map((video) => (
+          <div class="work-item aspect-video">
+            <iframe
+              src={`https://www.youtube.com/embed/${video.id}?rel=0`}
+              title={video.title}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        ))
+      }
     </div>
 
     <!-- ── Shorts ── -->
     <h3 class="work-subtitle">Shorts</h3>
     <div class="shorts-grid">
-      {shorts.map((video) => (
-        <div class="short-item">
-          <iframe
-            src={video.embedUrl}
-            title={video.title}
-            loading="lazy"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            scrolling="no"
-          ></iframe>
-        </div>
-      ))}
+      {
+        shorts.map((video) => (
+          <div class="short-item">
+            <iframe
+              src={video.embedUrl}
+              title={video.title}
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              scrolling="no"
+            />
+          </div>
+        ))
+      }
     </div>
 
     <!-- ── Miniaturas ── -->
     <h3 class="work-subtitle">Miniaturas</h3>
     <div class="thumb-grid">
-      {thumbnails.map((n) => (
-        <div class="thumb-item" set:html={box(n)}></div>
-      ))}
+      {
+        thumbnails.map((n) => (
+          <div class="thumb-item" data-thumb-index={n} set:html={box(n)} />
+        ))
+      }
     </div>
   </div>
 </section>
+
+<!-- Modal Preview -->
+<div
+  class="modal-overlay"
+  id="thumbnail-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-label="Vista previa de miniatura"
+>
+  <div class="modal-content">
+    <img id="modal-image" src="" alt="" />
+  </div>
+</div>
+
+<script>
+  const thumbnails = document.querySelectorAll(".thumb-item");
+  const modal = document.getElementById("thumbnail-modal");
+  const modalImage = document.getElementById("modal-image");
+
+  let currentIndex = 0;
+  const thumbIndices = Array.from(thumbnails).map((t) =>
+    parseInt(t.dataset.thumbIndex),
+  );
+
+  function openModal(index) {
+    currentIndex = index;
+    const n = thumbIndices[index];
+    modalImage.src = `/miniatura${n}-header.webp`;
+    modalImage.alt = `Miniatura ${n}`;
+    modal.classList.add("active");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal() {
+    modal.classList.remove("active");
+    modalImage.src = "";
+    document.body.style.overflow = "";
+  }
+
+  function navigate(direction) {
+    currentIndex =
+      (currentIndex + direction + thumbIndices.length) % thumbIndices.length;
+    openModal(currentIndex);
+  }
+
+  thumbnails.forEach((thumb, index) => {
+    thumb.addEventListener("click", () => openModal(index));
+    thumb.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openModal(index);
+      }
+    });
+  });
+
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (!modal.classList.contains("active")) return;
+    if (e.key === "Escape") closeModal();
+    if (e.key === "ArrowLeft") navigate(-1);
+    if (e.key === "ArrowRight") navigate(1);
+  });
+</script>
 
 <style>
   /* ════════════════════════════════════════
@@ -84,11 +184,11 @@ const box = (n: number) =>
      ════════════════════════════════════════ */
   .work-subtitle {
     margin: 3rem 0 1.5rem;
-    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.25rem);
     font-weight: 600;
     letter-spacing: -0.02em;
     color: rgb(255 255 255 / 0.85);
-    text-align: left;
+    text-align: center;
   }
 
   .work-subtitle:first-of-type {
@@ -125,6 +225,7 @@ const box = (n: number) =>
     display: flex;
     flex-wrap: wrap;
     gap: 1.5rem;
+    justify-content: center;
   }
 
   .short-item {
@@ -146,20 +247,6 @@ const box = (n: number) =>
     transform-origin: top left;
   }
 
-  @media (max-width: 480px) {
-    .short-item {
-      width: 100%;
-      max-width: 286px;
-      height: 508px;
-    }
-    .short-item iframe {
-      width: 100%;
-      max-width: 325px;
-      height: 574px;
-      transform: none;
-    }
-  }
-
   /* ════════════════════════════════════════
      Miniaturas — 16:9
      ════════════════════════════════════════ */
@@ -172,6 +259,7 @@ const box = (n: number) =>
   .thumb-item {
     overflow: hidden;
     border-radius: 0.75rem;
+    cursor: pointer;
   }
 
   /* ════════════════════════════════════════
@@ -193,5 +281,51 @@ const box = (n: number) =>
     .work {
       padding: 4rem 0;
     }
+  }
+
+  /* ════════════════════════════════════════
+     Modal Preview
+     ════════════════════════════════════════ */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.3s ease,
+      visibility 0.3s ease;
+    padding: 1rem;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-content {
+    position: relative;
+    max-width: 720px;
+    width: 100%;
+    max-height: 90vh;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.active .modal-content {
+    transform: scale(1);
+  }
+
+  .modal-content img {
+    width: 100%;
+    height: auto;
+    max-height: 90vh;
+    object-fit: contain;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
   }
 </style>
