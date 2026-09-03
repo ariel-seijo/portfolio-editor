@@ -1,0 +1,197 @@
+---
+// ── Videos largos (YouTube, 16:9) ──
+const longVideos = [
+  { id: 'B4InDxU87Y4', title: 'Video 1' },
+  { id: 'kF3KOmVTnZQ', title: 'Video 2' },
+  { id: 'bj-riu4WUcs', title: 'Video 3' },
+  { id: 'V4o4joMWcCg', title: 'Video 4' },
+  { id: 'TIDUTCgsnsY', title: 'Video 5' },
+];
+
+// ── Shorts (TikTok) ──
+const shorts = [
+  { embedUrl: 'https://www.tiktok.com/embed/v2/7658571262309960981', title: 'Short TikTok' },
+  { embedUrl: 'https://www.tiktok.com/embed/v2/7657787702661631253', title: 'Short TikTok' },
+  { embedUrl: 'https://www.tiktok.com/embed/v2/7516683055780678918', title: 'Short TikTok' },
+  { embedUrl: 'https://www.tiktok.com/embed/v2/7615746755413429524', title: 'Short TikTok' },
+  { embedUrl: 'https://www.tiktok.com/embed/v2/7581146015777033502', title: 'Short TikTok' },
+];
+
+// ── Miniaturas (16:9) — existen 1-8, 10 y 11 ──
+const thumbnails = [1, 2, 3, 4, 5, 6, 7, 8, 10, 11];
+
+const box = (n: number) =>
+  `<div class="w-full aspect-video overflow-hidden rounded-lg border border-white/10"><img src="/miniatura${n}-header.webp" alt="" width="1040" height="585" loading="lazy" decoding="async" class="block w-full h-full" style="aspect-ratio:16/9;object-fit:cover" /></div>`;
+---
+
+<section id="portfolio" class="work">
+  <div class="container-portfolio">
+    <h2 class="section-title">Trabajos realizados</h2>
+
+    <!-- ── Videos largos ── -->
+    <h3 class="work-subtitle">Videos largos</h3>
+    <div class="work-grid">
+      {longVideos.map((video) => (
+        <div class="work-item aspect-video">
+          <iframe
+            src={`https://www.youtube.com/embed/${video.id}?rel=0`}
+            title={video.title}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          ></iframe>
+        </div>
+      ))}
+    </div>
+
+    <!-- ── Shorts ── -->
+    <h3 class="work-subtitle">Shorts</h3>
+    <div class="shorts-grid">
+      {shorts.map((video) => (
+        <div class="short-item">
+          <iframe
+            src={video.embedUrl}
+            title={video.title}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            scrolling="no"
+          ></iframe>
+        </div>
+      ))}
+    </div>
+
+    <!-- ── Miniaturas ── -->
+    <h3 class="work-subtitle">Miniaturas</h3>
+    <div class="thumb-grid">
+      {thumbnails.map((n) => (
+        <div class="thumb-item" set:html={box(n)}></div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  /* ════════════════════════════════════════
+     Section
+     ════════════════════════════════════════ */
+  .work {
+    padding: 6rem 0;
+  }
+
+  /* ════════════════════════════════════════
+     Subtítulos
+     ════════════════════════════════════════ */
+  .work-subtitle {
+    margin: 3rem 0 1.5rem;
+    font-size: clamp(1.25rem, 3vw, 1.75rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: rgb(255 255 255 / 0.85);
+    text-align: left;
+  }
+
+  .work-subtitle:first-of-type {
+    margin-top: 2rem;
+  }
+
+  /* ════════════════════════════════════════
+     Videos largos — grid responsivo
+     ════════════════════════════════════════ */
+  .work-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .work-item {
+    overflow: hidden;
+    border-radius: 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background-color: #000;
+  }
+
+  .work-item iframe {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: 0;
+  }
+
+  /* ════════════════════════════════════════
+     Shorts — proporción 9:16 en columna
+     ════════════════════════════════════════ */
+  .shorts-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+  }
+
+  .short-item {
+    background-color: #0a0a0a;
+    width: 286px;
+    height: 508px;
+    border: 1px solid #0a0a0a;
+    border-radius: 0.75rem;
+    overflow: hidden;
+  }
+
+  .short-item iframe {
+    width: 325px;
+    height: 574px;
+    display: block;
+    border: none;
+    padding: 0;
+    transform: scale(0.879) translate(-1px, -1px);
+    transform-origin: top left;
+  }
+
+  @media (max-width: 480px) {
+    .short-item {
+      width: 100%;
+      max-width: 286px;
+      height: 508px;
+    }
+    .short-item iframe {
+      width: 100%;
+      max-width: 325px;
+      height: 574px;
+      transform: none;
+    }
+  }
+
+  /* ════════════════════════════════════════
+     Miniaturas — 16:9
+     ════════════════════════════════════════ */
+  .thumb-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .thumb-item {
+    overflow: hidden;
+    border-radius: 0.75rem;
+  }
+
+  /* ════════════════════════════════════════
+     Responsive
+     ════════════════════════════════════════ */
+  @media (min-width: 640px) {
+    .work-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .work-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .work {
+      padding: 4rem 0;
+    }
+  }
+</style>
