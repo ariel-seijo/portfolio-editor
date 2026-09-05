@@ -60,3 +60,6 @@ CLAUDE.md
 
 # cloudinary (local cache)
 .cloudinary/
+
+# generated client avatars (rebuilt on every build)
+public/clients/
