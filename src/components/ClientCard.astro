@@ -1,0 +1,146 @@
+---
+interface Props {
+  name: string;
+  handle: string;
+  photoUrl: string;
+  channelUrl: string;
+  verified?: boolean;
+}
+
+const {
+  name,
+  handle,
+  photoUrl,
+  channelUrl,
+  verified = true,
+} = Astro.props;
+---
+
+<a
+  href={channelUrl}
+  class="client-card"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label={`Canal de ${name} en YouTube`}
+>
+  <div class="client-avatar">
+    {photoUrl ? (
+      <img
+        src={photoUrl}
+        alt={`Foto de perfil de ${name}`}
+        loading="lazy"
+        decoding="async"
+        width="200"
+        height="200"
+      />
+    ) : (
+      <div class="client-avatar-fallback" aria-hidden="true">
+        {handle.charAt(0).toUpperCase()}
+      </div>
+    )}
+  </div>
+
+  <div class="client-name-row">
+    <span class="client-name">{name}</span>
+    {verified && (
+      <span class="verified-badge" title="Verificado" aria-label="Verificado">
+        <svg
+          viewBox="0 0 24 24"
+          width="12"
+          height="12"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M9.55 17.7 4.9 13.05l1.45-1.45 3.2 3.2 8.1-8.1 1.45 1.45-8.55 8.55z" />
+        </svg>
+      </span>
+    )}
+  </div>
+
+  <span class="client-handle">@{handle}</span>
+</a>
+
+<style>
+  .client-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 2rem 1.25rem;
+    text-align: center;
+    border-radius: 1rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background-color: rgb(255 255 255 / 0.03);
+    text-decoration: none;
+    transition:
+      border-color 0.3s ease,
+      background-color 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .client-card:hover {
+    border-color: rgb(255 255 255 / 0.25);
+    background-color: rgb(255 255 255 / 0.07);
+    transform: translateY(-4px);
+  }
+
+  .client-avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid rgb(255 255 255 / 0.15);
+    flex-shrink: 0;
+  }
+
+  .client-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .client-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: #ffffff;
+    background: linear-gradient(135deg, #1d9bf0, #a855f7);
+  }
+
+  .client-name-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .client-name {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    line-height: 1.3;
+  }
+
+  .verified-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background-color: #1d9bf0;
+    color: #ffffff;
+  }
+
+  .client-handle {
+    font-size: 0.8rem;
+    color: rgb(255 255 255 / 0.45);
+  }
+</style>

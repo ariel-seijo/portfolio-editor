@@ -1,0 +1,116 @@
+---
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import ClientCard from './ClientCard.astro';
+import { fetchChannels } from '../lib/youtube';
+
+const CLIENT_HANDLES = [
+  'cesaroxx3561',
+  'deadlymark5740',
+  'hilyra',
+  'CharlyScoTT',
+  'foxyadc',
+  'Wanderingnovagaming',
+  'HazukyTV',
+  'neorodriguezmx9',
+  'DUXTERTV',
+  'ZAXrevengeance',
+];
+
+async function persistAvatar(handle: string, remoteUrl: string): Promise<string> {
+  try {
+    const res = await fetch(remoteUrl);
+    if (!res.ok) return remoteUrl;
+
+    const buf = Buffer.from(await res.arrayBuffer());
+    const fileName = `${handle.toLowerCase()}.jpg`;
+    const dir = join(process.cwd(), 'public', 'clients');
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, fileName), buf);
+
+    return `/clients/${fileName}`;
+  } catch {
+    return remoteUrl;
+  }
+}
+
+const results = await fetchChannels(CLIENT_HANDLES);
+
+const clients = await Promise.all(
+  results.map(async (channel, index) => {
+    const handle = CLIENT_HANDLES[index];
+
+    if (channel) {
+      const photoUrl = await persistAvatar(handle, channel.thumbnailUrl);
+      return {
+        name: channel.title,
+        handle,
+        photoUrl,
+        channelUrl: channel.channelUrl,
+      };
+    }
+
+    return {
+      name: `@${handle}`,
+      handle,
+      photoUrl: '',
+      channelUrl: `https://www.youtube.com/@${handle}`,
+    };
+  })
+);
+---
+
+<section id="clientes" class="clients">
+  <div class="container-portfolio">
+    <h2 class="section-title">Clientes</h2>
+
+    <div class="clients-grid">
+      {
+        clients.map((client) => (
+          <ClientCard
+            name={client.name}
+            handle={client.handle}
+            photoUrl={client.photoUrl}
+            channelUrl={client.channelUrl}
+          />
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .clients {
+    padding: 6rem 0;
+  }
+
+  .clients-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .clients-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .clients-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .clients-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .clients {
+      padding: 4rem 0;
+    }
+  }
+</style>
