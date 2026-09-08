@@ -1,0 +1,263 @@
+---
+import { extractYouTubeId, buildEmbedUrl, buildThumbUrl } from '../lib/youtube-shorts';
+import type { YouTubeShort } from '../types';
+
+interface Props {
+  shorts: YouTubeShort[];
+}
+
+const { shorts } = Astro.props;
+
+// Validar y normalizar. Las URLs inválidas se descartan y nunca se renderizan.
+const items = shorts
+  .filter((s) => typeof s?.youtubeUrl === 'string')
+  .map((s) => ({ ...s, videoId: extractYouTubeId(s.youtubeUrl) }))
+  .filter((s): s is typeof s & { videoId: string } => Boolean(s.videoId));
+
+const cards = items.map(({ videoId, thumbnailUrl, title }) => ({
+  title,
+  videoId,
+  thumb: thumbnailUrl || buildThumbUrl(videoId),
+}));
+---
+
+{
+  cards.length > 0 && (
+    <div class="shorts-grid">
+      {cards.map((card, i) => (
+        <button
+          type="button"
+          class="short-card"
+          data-video-id={card.videoId}
+          data-index={i}
+          aria-label={`Reproducir short: ${card.title}`}
+        >
+          <img
+            class="short-thumb"
+            src={card.thumb}
+            alt={`Miniatura de ${card.title}`}
+            width="480"
+            height="854"
+            loading="lazy"
+            decoding="async"
+          />
+          <span class="short-overlay" aria-hidden="true">
+            <span class="short-play">▶</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  )
+}
+
+<div class="shorts-modal" id="shorts-modal" role="dialog" aria-modal="true" hidden>
+  <div class="shorts-modal-backdrop" data-close></div>
+  <div class="shorts-modal-panel" role="document">
+    <button type="button" class="shorts-modal-close" data-close aria-label="Cerrar">
+      ✕
+    </button>
+    <div class="shorts-modal-video" id="shorts-player"></div>
+  </div>
+</div>
+
+<script>
+  const modal = document.getElementById("shorts-modal");
+  const player = document.getElementById("shorts-player");
+  let lastFocused = null;
+
+  function openModal(videoId, title) {
+    lastFocused = document.activeElement;
+    modal.hidden = false;
+    modal.classList.add("open");
+    const frame = document.createElement("iframe");
+    frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+    frame.title = title || "YouTube Short";
+    frame.allow =
+      "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+    frame.allowFullscreen = true;
+    player.appendChild(frame);
+    const closeBtn = modal.querySelector(".shorts-modal-close");
+    closeBtn && closeBtn.focus();
+  }
+
+  function closeModal() {
+    player.innerHTML = "";
+    modal.classList.remove("open");
+    modal.hidden = true;
+    if (lastFocused && typeof lastFocused.focus === "function") {
+      lastFocused.focus();
+    }
+  }
+
+  document.querySelectorAll(".short-card").forEach((card) => {
+    card.addEventListener("click", () =>
+      openModal(card.dataset.videoId, card.getAttribute("aria-label"))
+    );
+  });
+
+  modal.querySelectorAll("[data-close]").forEach((el) =>
+    el.addEventListener("click", closeModal)
+  );
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !modal.hidden) closeModal();
+  });
+</script>
+
+<style>
+  .shorts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 1.5rem;
+    justify-content: center;
+  }
+
+  .short-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    border: none;
+    padding: 0;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    cursor: pointer;
+    background-color: #0a0a0a;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    transition: border-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .short-card:hover {
+    border-color: rgb(255 255 255 / 0.25);
+    transform: translateY(-2px);
+  }
+
+  .short-thumb {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .short-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(
+      180deg,
+      rgb(0 0 0 / 0) 40%,
+      rgb(0 0 0 / 0.45) 100%
+    );
+  }
+
+  .short-play {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgb(255 255 255 / 0.9);
+    color: #0a0a0a;
+    font-size: 1.2rem;
+    padding-left: 0.25rem;
+    box-shadow: 0 4px 18px rgb(0 0 0 / 0.4);
+  }
+
+  .short-card:hover .short-play {
+    background: #ffffff;
+  }
+
+  /* ── Modal ── */
+  .shorts-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .shorts-modal[hidden] {
+    display: none;
+  }
+
+  .shorts-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.85);
+    animation: shortsFade 0.2s ease;
+  }
+
+  .shorts-modal-panel {
+    position: relative;
+    width: min(100%, calc(90dvh * 0.5625));
+    max-width: 460px;
+    aspect-ratio: 9 / 16;
+    background: #000;
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgb(0 0 0 / 0.6);
+    animation: shortsPop 0.25s ease;
+  }
+
+  .shorts-modal-video {
+    position: absolute;
+    inset: 0;
+  }
+
+  .shorts-modal-video iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  .shorts-modal-close {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background: rgb(10 10 10 / 0.7);
+    color: #fafafa;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .shorts-modal-close:hover {
+    background: rgb(255 255 255 / 0.2);
+  }
+
+  @keyframes shortsFade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes shortsPop {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+</style>

@@ -21,6 +21,15 @@ export interface MediaItem {
   duration?: number;
 }
 
+export interface YouTubeShort {
+  title: string;
+  youtubeUrl: string;
+  thumbnailUrl?: string;
+  author?: string;
+  category?: string;
+  date?: string;
+}
+
 export interface SocialLink {
   platform: string;
   url: string;
