@@ -3,61 +3,202 @@ import YouTubeShorts from './YouTubeShorts.astro';
 
 // ── Videos largos (YouTube, 16:9) ──
 const longVideos = [
-  { id: "B4InDxU87Y4", title: "Video 1" },
-  { id: "kF3KOmVTnZQ", title: "Video 2" },
-  { id: "bj-riu4WUcs", title: "Video 3" },
-  { id: "V4o4joMWcCg", title: "Video 4" },
-  { id: "TIDUTCgsnsY", title: "Video 5" },
-  { id: "Emz0ZcjAc44", title: "Video 6" },
+  { id: "WwYO7erQg-o", title: "Video 1", game: "league-of-legends" },
+  { id: "kF3KOmVTnZQ", title: "Video 2", game: "league-of-legends" },
+  { id: "y-Dw8jXsOTE", title: "Video 3", game: "league-of-legends" },
+  { id: "lWeKS44bu1Q", title: "Video 4", game: "league-of-legends" },
+  { id: "3Lg9SqiMYhg", title: "Video 5", game: "league-of-legends" },
+  { id: "Saj8_kfBHNM", title: "Video 6", game: "valorant" },
+  { id: "bj-riu4WUcs", title: "Video 7", game: "valorant" },
+  { id: "jx3M5nN0QoQ", title: "Video 8", game: "valorant" },
+  { id: "TBRDql3DQjU", title: "Video 9", game: "valorant" },
+  { id: "cTc6mpT92pU", title: "Video 10", game: "valorant" },
+  { id: "B4InDxU87Y4", title: "Video 11", game: "repo" },
+  { id: "V7ay8Hm9VUM", title: "Video 12", game: "repo" },
+  { id: "SRxNYFFVhgc", title: "Video 13", game: "repo" },
+  { id: "LFshWMlQu94", title: "Video 14", game: "repo" },
+  { id: "R3ri1DYng3Q", title: "Video 15", game: "otro" },
+  { id: "Emz0ZcjAc44", title: "Video 16", game: "otro" },
+  { id: "UbKge1oWPAg", title: "Video 17", game: "otro" },
+  { id: "Jg4uI0hq5cQ", title: "Video 18", game: "otro" },
+  { id: "2JBr02z7n4E", title: "Video 19", game: "otro" },
+  { id: "0YZSdjZUBlA", title: "Video 20", game: "otro" },
+  { id: "a9bOxrRrQ0Y", title: "Video 21", game: "otro" },
+  { id: "Sw-a0-QJeRo", title: "Video 22", game: "otro" },
+  { id: "2TVUIGRhPdI", title: "Video 23", game: "otro" },
 ];
 
 // ── Shorts (YouTube) ──
-const shorts = [
-  { title: "Short 1", youtubeUrl: "https://www.youtube.com/shorts/G9qfGDtatT0" },
-  { title: "Short 2", youtubeUrl: "https://www.youtube.com/shorts/2W_ONpMEGqg" },
+
+const othersIds = [
+  "bFuor2ZVA5U",
+  "pd42xxSlGS4",
+  "n2ly2o_ZR4E",
+  "li--UsCuy_Q",
+  "sultzXukXZo",
+  "FAIx7DZmuCs",
+  "mpjrDdAvszo",
+  "V8tfRdZiPn4",
+  "vju1hb2Km8g",
+  "2fNurfam9f4",
+  "ZpSgVNbcYCc",
+  "n-NnyGywRuM",
+  "PlecRhwQvSk",
+  "dQ0udODLpF0",
 ];
+
+const shorts = [
+  ...[
+    "2W_ONpMEGqg",
+    "0vwVkY7Jzdk",
+    "1ZAD0oyslsc",
+    "-Y6DnCp1XR4",
+    "G9qfGDtatT0",
+    "M5g0RFBhLvU",
+    "I-YFkzX6Vzw",
+    "Nv2WXOdfp8g",
+    "0pw7XPW0O4I",
+    "YoyVKTM9ylQ",
+    "wMJfnOil1p0",
+    "UarivEkbkSg",
+    "Wc6xWdXjqJI",
+  ].map((id) => ({ youtubeUrl: `https://www.youtube.com/shorts/${id}`, game: "league-of-legends" })),
+  ...[
+    "972iPdt7Rzc",
+    "61WwEgGw2S4",
+    "WYro95X_9B0",
+    "N3OXSBfSKcU",
+    "Gcpt8OAZOPs",
+    "pFe20GIY94Y",
+  ].map((id) => ({ youtubeUrl: `https://www.youtube.com/shorts/${id}`, game: "valorant" })),
+  ...[
+    "AODsFyKdlSE",
+    "zdnwtNzqZDk",
+    "noIOCALwCus",
+    "WQtmemFHYq8",
+    "K3cxeL5I3lE",
+    "0qVa8LZgBnU",
+  ].map((id) => ({ youtubeUrl: `https://www.youtube.com/shorts/${id}`, game: "fortnite" })),
+  ...[
+    "lkedZdezKQo",
+    "hHeZ9xxTzD0",
+    "GvJ2YMY3O34",
+    "o1Ag3SjT34M",
+    "vHXJqkQFkTA",
+    "OhwzQPBzo3k",
+  ].map((id) => ({ youtubeUrl: `https://www.youtube.com/watch?v=${id}`, game: "arc-raiders" })),
+  ...othersIds.map((id) => ({
+    youtubeUrl: `https://www.youtube.com/shorts/${id}`,
+    game: "otros",
+  })),
+].map((s, i) => ({ title: `Short ${i + 1}`, ...s }));
 
 // ── Miniaturas (16:9) — existen 1-16 ──
 const thumbnails = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 
 const box = (n: number) =>
   `<div class="w-full aspect-video overflow-hidden rounded-lg border border-white/10"><img src="/miniatura${n}-header.webp" alt="" width="1040" height="585" loading="lazy" decoding="async" class="block w-full h-full" style="aspect-ratio:16/9;object-fit:cover" /></div>`;
+
+// ── Filtros por juego ──
+const filters = {
+  videos: ["league-of-legends", "valorant", "repo", "otro"],
+  shorts: ["league-of-legends", "valorant", "fortnite", "arc-raiders", "otros"],
+  thumbs: ["league-of-legends", "valorant", "otros"],
+};
+
+const filterLabels: Record<string, string> = {
+  "league-of-legends": "League of Legends",
+  valorant: "Valorant",
+  repo: "Repo",
+  otro: "Otro",
+  fortnite: "Fortnite",
+  "arc-raiders": "Arc Raiders",
+  otros: "Otros",
+};
 ---
 
 <section id="portfolio" class="work">
   <div class="container-portfolio">
     <h2 class="section-title">Trabajos realizados</h2>
 
-    <!-- ── Videos largos ── -->
-    <h3 class="work-subtitle">Videos largos</h3>
-    <div class="work-grid">
-      {
-        longVideos.map((video) => (
-          <div class="work-item aspect-video">
-            <iframe
-              src={`https://www.youtube.com/embed/${video.id}?rel=0`}
-              title={video.title}
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
-        ))
-      }
+    <!-- ── Tabs ── -->
+    <div class="work-tabs" role="tablist" aria-label="Categorías de trabajos">
+      <button type="button" class="work-tab is-active" role="tab" aria-selected="true" data-tab="videos">
+        Videos largos
+      </button>
+      <button type="button" class="work-tab" role="tab" aria-selected="false" data-tab="shorts">
+        Shorts
+      </button>
+      <button type="button" class="work-tab" role="tab" aria-selected="false" data-tab="thumbs">
+        Miniaturas
+      </button>
     </div>
 
-    <!-- ── Shorts (YouTube) ── -->
-    <h3 class="work-subtitle">Shorts</h3>
-    <YouTubeShorts shorts={shorts} />
+    <div class="work-panels">
+      <!-- ── Videos largos ── -->
+      <div class="work-panel" data-panel="videos">
+        <div class="work-filters" role="group" aria-label="Filtrar videos largos por juego">
+          {
+            filters.videos.map((f, i) => (
+              <button type="button" class="work-filter" data-filter={f} aria-pressed="false">
+                <span class="work-filter-number">{String(i + 1).padStart(2, "0")}</span>
+                {filterLabels[f]}
+              </button>
+            ))
+          }
+        </div>
+        <div class="work-grid">
+          {
+            longVideos.map((video) => (
+              <div class="work-item aspect-video" data-game={video.game}>
+                <iframe
+                  src={`https://www.youtube.com/embed/${video.id}?rel=0`}
+                  title={video.title}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+            ))
+          }
+        </div>
+      </div>
 
-    <!-- ── Miniaturas ── -->
-    <h3 class="work-subtitle">Miniaturas</h3>
-    <div class="thumb-grid">
-      {
-        thumbnails.map((n) => (
-          <div class="thumb-item" data-thumb-index={n} set:html={box(n)} />
-        ))
-      }
+      <!-- ── Shorts (YouTube) ── -->
+      <div class="work-panel" data-panel="shorts" hidden>
+        <div class="work-filters" role="group" aria-label="Filtrar shorts por juego">
+          {
+            filters.shorts.map((f, i) => (
+              <button type="button" class="work-filter" data-filter={f} aria-pressed="false">
+                <span class="work-filter-number">{String(i + 1).padStart(2, "0")}</span>
+                {filterLabels[f]}
+              </button>
+            ))
+          }
+        </div>
+        <YouTubeShorts shorts={shorts} />
+      </div>
+
+      <!-- ── Miniaturas ── -->
+      <div class="work-panel" data-panel="thumbs" hidden>
+        <div class="work-filters" role="group" aria-label="Filtrar miniaturas por juego">
+          {
+            filters.thumbs.map((f, i) => (
+              <button type="button" class="work-filter" data-filter={f} aria-pressed="false">
+                <span class="work-filter-number">{String(i + 1).padStart(2, "0")}</span>
+                {filterLabels[f]}
+              </button>
+            ))
+          }
+        </div>
+        <div class="thumb-grid">
+          {
+            thumbnails.map((n) => (
+              <div class="thumb-item" data-thumb-index={n} set:html={box(n)} />
+            ))
+          }
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -76,7 +217,62 @@ const box = (n: number) =>
 </div>
 
 <script>
+  const tabs = document.querySelectorAll(".work-tab");
+  const panels = document.querySelectorAll(".work-panel");
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      tabs.forEach((t) => {
+        t.classList.toggle("is-active", t === tab);
+        t.setAttribute("aria-selected", t === tab ? "true" : "false");
+      });
+      panels.forEach((panel) => {
+        panel.hidden = panel.dataset.panel !== tab.dataset.tab;
+      });
+    });
+  });
+
   const thumbnails = document.querySelectorAll(".thumb-item");
+
+  let visibleThumbs = Array.from(thumbnails);
+
+  function refreshVisible() {
+    visibleThumbs = Array.from(thumbnails).filter((t) => !t.hidden);
+    if (currentIndex >= visibleThumbs.length) {
+      currentIndex = Math.max(0, visibleThumbs.length - 1);
+    }
+  }
+
+  const filterGroups = document.querySelectorAll(".work-filters");
+  filterGroups.forEach((group) => {
+    const panel = group.closest(".work-panel");
+    const items = panel ? panel.querySelectorAll("[data-game]") : [];
+    const filters = group.querySelectorAll(".work-filter");
+
+    const applyFilter = () => {
+      const active = group.querySelector(".work-filter.is-active");
+      const activeFilter = active ? active.dataset.filter : null;
+      items.forEach((item) => {
+        item.hidden = activeFilter !== null && item.dataset.game !== activeFilter;
+      });
+      refreshVisible();
+    };
+
+    filters.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const wasPressed = btn.getAttribute("aria-pressed") === "true";
+        filters.forEach((b) => {
+          b.classList.remove("is-active");
+          b.setAttribute("aria-pressed", "false");
+        });
+        if (!wasPressed) {
+          btn.classList.add("is-active");
+          btn.setAttribute("aria-pressed", "true");
+        }
+        applyFilter();
+      });
+    });
+  });
   const modal = document.getElementById("thumbnail-modal");
   const modalImage = document.getElementById("modal-image");
 
@@ -153,6 +349,107 @@ const box = (n: number) =>
   }
 
   /* ════════════════════════════════════════
+     Tabs — strip segmentado editorial
+     ════════════════════════════════════════ */
+  .work-tabs {
+    display: flex;
+    justify-content: center;
+    width: fit-content;
+    margin: 2rem auto 2.5rem;
+    border: 1px solid rgb(255 255 255 / 0.2);
+  }
+
+  .work-tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2.25rem;
+    border: 0;
+    border-right: 1px solid rgb(255 255 255 / 0.15);
+    background: transparent;
+    color: rgb(255 255 255 / 0.55);
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    white-space: nowrap;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .work-tab:last-child {
+    border-right: 0;
+  }
+
+  .work-tab:hover {
+    color: #fff;
+  }
+
+  .work-tab.is-active {
+    background: #fafafa;
+    color: #0a0a0a;
+  }
+
+  .work-panel[hidden] {
+    display: none;
+  }
+
+  /* ════════════════════════════════════════
+     Filtros por juego — índice numerado
+     ════════════════════════════════════════ */
+  .work-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .work-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1.1rem;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    margin: -1px 0 0 -1px;
+    background: transparent;
+    color: rgb(255 255 255 / 0.6);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .work-filter-number {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    opacity: 0.4;
+  }
+
+  .work-filter:hover {
+    color: #fff;
+  }
+
+  .work-filter.is-active {
+    background: #fafafa;
+    color: #0a0a0a;
+  }
+
+  .work-filter.is-active .work-filter-number {
+    opacity: 1;
+  }
+
+  .work-tab:focus-visible,
+  .work-filter:focus-visible {
+    outline: 2px solid #fafafa;
+    outline-offset: -2px;
+  }
+
+  /* ════════════════════════════════════════
      Videos largos — grid responsivo
      ════════════════════════════════════════ */
   .work-grid {
@@ -173,6 +470,10 @@ const box = (n: number) =>
     height: 100%;
     display: block;
     border: 0;
+  }
+
+  .work-item[hidden] {
+    display: none;
   }
 
   /* ════════════════════════════════════════
@@ -208,6 +509,22 @@ const box = (n: number) =>
   @media (max-width: 767px) {
     .work {
       padding: 4rem 0;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .work-tabs {
+      flex-direction: column;
+      width: 100%;
+    }
+
+    .work-tab {
+      border-right: 0;
+      border-bottom: 1px solid rgb(255 255 255 / 0.15);
+    }
+
+    .work-tab:last-child {
+      border-bottom: 0;
     }
   }
 
