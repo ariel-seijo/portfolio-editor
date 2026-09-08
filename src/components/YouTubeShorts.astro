@@ -75,6 +75,9 @@ const cards = items.map(({ videoId, thumbnailUrl, title }) => ({
     frame.allow =
       "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
     frame.allowFullscreen = true;
+    frame.style.width = "100%";
+    frame.style.height = "100%";
+    frame.style.border = "0";
     player.appendChild(frame);
     const closeBtn = modal.querySelector(".shorts-modal-close");
     closeBtn && closeBtn.focus();
