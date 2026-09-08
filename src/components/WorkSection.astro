@@ -93,11 +93,52 @@ const shorts = [
   })),
 ].map((s, i) => ({ title: `Short ${i + 1}`, ...s }));
 
-// ── Miniaturas (16:9) — existen 1-16 ──
-const thumbnails = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-
-const box = (n: number) =>
-  `<div class="w-full aspect-video overflow-hidden rounded-lg border border-white/10"><img src="/miniatura${n}-header.webp" alt="" width="1040" height="585" loading="lazy" decoding="async" class="block w-full h-full" style="aspect-ratio:16/9;object-fit:cover" /></div>`;
+// ── Miniaturas por juego (16:9) ──
+const thumbs = [
+  ...[
+    "miniatura1-header.webp",
+    "miniatura4-header.webp",
+    "miniatura8-header.webp",
+    "miniatura11-header.webp",
+    "miniatura12-header.webp",
+    "miniatura13-header.webp",
+    "miniatura14-header.webp",
+    "miniatura15-header.webp",
+    "miniatura16-header.webp",
+    "miniatura20-lol.webp",
+    "miniatura22.webp",
+    "miniatura23.webp",
+    "miniatura25.webp",
+    "miniatura26.webp",
+    "miniatura27.webp",
+    "miniatura28.webp",
+    "miniatura29.webp",
+    "miniatura31.webp",
+    "miniatura41.webp",
+    "miniatura2224.webp",
+    "miniatura22231.webp",
+    "miniatura224124.webp",
+  ].map((f) => ({ src: `/league-of-legends/${f}`, game: "league-of-legends" })),
+  ...[
+    "miniatura5-header.webp",
+    "miniatura6-header.webp",
+    "miniatura7-header.webp",
+    "miniatura9-header.webp",
+    "miniatura67.webp",
+    "miniatura2243.webp",
+    "miniatura22324.webp",
+    "miniatura2242432.webp",
+    "miniatura22323423.webp",
+    "miniatura22miniatura22.webp",
+  ].map((f) => ({ src: `/valorant/${f}`, game: "valorant" })),
+  ...[
+    "miniatura2-header.webp",
+    "miniatura3-header.webp",
+    "miniatura10-header.webp",
+    "miniatura30.webp",
+    "miniatura22sdaf.webp",
+  ].map((f) => ({ src: `/otros/${f}`, game: "otros" })),
+].map((t, i) => ({ title: `Miniatura ${i + 1}`, ...t }));
 
 // ── Filtros por juego ──
 const filters = {
@@ -193,8 +234,25 @@ const filterLabels: Record<string, string> = {
         </div>
         <div class="thumb-grid">
           {
-            thumbnails.map((n) => (
-              <div class="thumb-item" data-thumb-index={n} set:html={box(n)} />
+            thumbs.map((thumb) => (
+              <div
+                class="thumb-item"
+                data-game={thumb.game}
+                data-thumb-src={thumb.src}
+                tabindex="0"
+              >
+                <img
+                  src={thumb.src}
+                  alt={thumb.title}
+                  width="1040"
+                  height="585"
+                  loading="lazy"
+                  decoding="async"
+                  draggable="false"
+                  class="block w-full h-full"
+                  style="aspect-ratio:16/9;object-fit:cover"
+                />
+              </div>
             ))
           }
         </div>
@@ -212,7 +270,7 @@ const filterLabels: Record<string, string> = {
   aria-label="Vista previa de miniatura"
 >
   <div class="modal-content">
-    <img id="modal-image" src="" alt="" />
+    <img id="modal-image" src="" alt="" draggable="false" />
   </div>
 </div>
 
@@ -277,37 +335,54 @@ const filterLabels: Record<string, string> = {
   const modalImage = document.getElementById("modal-image");
 
   let currentIndex = 0;
-  const thumbIndices = Array.from(thumbnails).map((t) =>
-    parseInt(t.dataset.thumbIndex),
-  );
+
+  const lockScroll = (locked) => {
+    const root = document.documentElement;
+    if (locked) {
+      const width = window.innerWidth - root.clientWidth;
+      document.body.style.paddingRight = width ? `${width}px` : "";
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.paddingRight = "";
+      document.body.style.overflow = "";
+    }
+  };
 
   function openModal(index) {
+    const item = visibleThumbs[index];
+    if (!item) return;
     currentIndex = index;
-    const n = thumbIndices[index];
-    modalImage.src = `/miniatura${n}-header.webp`;
-    modalImage.alt = `Miniatura ${n}`;
+    const img = item.querySelector("img");
+    modalImage.src = item.dataset.thumbSrc;
+    modalImage.alt = img ? img.alt : "Miniatura";
+    modalImage.hidden = false;
     modal.classList.add("active");
-    document.body.style.overflow = "hidden";
+    lockScroll(true);
   }
 
   function closeModal() {
     modal.classList.remove("active");
-    modalImage.src = "";
-    document.body.style.overflow = "";
+    modalImage.hidden = true;
+    lockScroll(false);
   }
 
   function navigate(direction) {
+    if (!visibleThumbs.length) return;
     currentIndex =
-      (currentIndex + direction + thumbIndices.length) % thumbIndices.length;
+      (currentIndex + direction + visibleThumbs.length) % visibleThumbs.length;
     openModal(currentIndex);
   }
 
-  thumbnails.forEach((thumb, index) => {
-    thumb.addEventListener("click", () => openModal(index));
+  thumbnails.forEach((thumb) => {
+    thumb.addEventListener("click", () => {
+      const idx = visibleThumbs.indexOf(thumb);
+      openModal(idx);
+    });
     thumb.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        openModal(index);
+        const idx = visibleThumbs.indexOf(thumb);
+        openModal(idx);
       }
     });
   });
@@ -486,9 +561,32 @@ const filterLabels: Record<string, string> = {
   }
 
   .thumb-item {
+    position: relative;
     overflow: hidden;
     border-radius: 0.75rem;
+    border: 1px solid rgb(255 255 255 / 0.1);
+    background-color: #000;
     cursor: pointer;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+
+  .thumb-item[hidden] {
+    display: none;
+  }
+
+  .thumb-item:focus-visible {
+    outline: 2px solid #fafafa;
+    outline-offset: -2px;
+  }
+
+  .thumb-item img {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .thumb-item:hover img,
+  .thumb-item:focus-visible img {
+    transform: scale(1.07);
   }
 
   /* ════════════════════════════════════════
