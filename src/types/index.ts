@@ -27,6 +27,7 @@ export interface YouTubeShort {
   thumbnailUrl?: string;
   author?: string;
   category?: string;
+  game?: string;
   date?: string;
 }
 

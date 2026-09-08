@@ -14,9 +14,10 @@ const items = shorts
   .map((s) => ({ ...s, videoId: extractYouTubeId(s.youtubeUrl) }))
   .filter((s): s is typeof s & { videoId: string } => Boolean(s.videoId));
 
-const cards = items.map(({ videoId, thumbnailUrl, title }) => ({
+const cards = items.map(({ videoId, thumbnailUrl, title, game }) => ({
   title,
   videoId,
+  game,
   thumb: thumbnailUrl || buildThumbUrl(videoId),
 }));
 ---
@@ -30,6 +31,7 @@ const cards = items.map(({ videoId, thumbnailUrl, title }) => ({
           class="short-card"
           data-video-id={card.videoId}
           data-index={i}
+          data-game={card.game || undefined}
           aria-label={`Reproducir short: ${card.title}`}
         >
           <img
@@ -128,6 +130,10 @@ const cards = items.map(({ videoId, thumbnailUrl, title }) => ({
     background-color: #0a0a0a;
     border: 1px solid rgb(255 255 255 / 0.1);
     transition: border-color 0.3s ease, transform 0.3s ease;
+  }
+
+  .short-card[hidden] {
+    display: none;
   }
 
   .short-card:hover {
