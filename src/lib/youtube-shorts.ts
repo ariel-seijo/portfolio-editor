@@ -44,11 +44,28 @@ export function extractYouTubeId(rawUrl: string): string | null {
   return null;
 }
 
-/** Build a privacy-friendly embed URL with autoplay enabled. */
-export function buildEmbedUrl(videoId: string, autoplay = true): string {
-  const params = new URLSearchParams({ rel: '0' });
-  if (autoplay) params.set('autoplay', '1');
-  return `https://www.youtube.com/embed/${videoId}?${params.toString()}`;
+/** Local placeholder shown when a remote thumbnail fails to load (404 etc.). */
+export const FALLBACK_THUMB = '/shorts-placeholder.svg';
+
+const EMBED_BASE = 'https://www.youtube-nocookie.com/embed';
+
+interface EmbedOptions {
+  autoplay?: boolean;
+  mute?: boolean;
+}
+
+/**
+ * Build a privacy-friendly embed URL on youtube-nocookie.com (no cross-site
+ * cookies, no SameSite warnings in the console). Autoplay only when muted so
+ * the browser never blocks it.
+ */
+export function buildEmbedUrl(videoId: string, options: EmbedOptions = {}): string {
+  const params = new URLSearchParams({ rel: '0', playsinline: '1' });
+  if (options.autoplay) {
+    params.set('autoplay', '1');
+    if (options.mute) params.set('mute', '1');
+  }
+  return `${EMBED_BASE}/${videoId}?${params.toString()}`;
 }
 
 /** Default thumbnail for a video id, used when no custom thumbnail is provided. */
