@@ -1,241 +1,328 @@
 ---
 const services = [
   {
-    id: 'clip-farm',
-    title: 'Granja de clips',
-    description: 'Reviso el <span class="desc-highlight">VOD de tu stream</span> y extraigo todos los clips con potencial para <span class="desc-highlight">formato reel</span>. Al final, te entrego una carpeta con todos los <span class="desc-highlight">clips recortados</span>.',
-  },
-  {
-    id: 'video-edit',
-    title: 'Edición de video',
-    description: 'Convierto tu material en contenido atractivo para YouTube y plataformas de formato corto. <span class="desc-highlight">Edición dinámica</span>, <span class="desc-highlight">subtítulos</span>, <span class="desc-highlight">sound design</span>, <span class="desc-highlight">transiciones</span> y <span class="desc-highlight">efectos visuales</span> adaptados a tu estilo.',
-  },
-  {
-    id: 'image-edit',
-    title: 'Edición de imagen',
-    description: '<span class="desc-highlight">Miniaturas</span>, <span class="desc-highlight">banners</span> y <span class="desc-highlight">piezas gráficas</span> diseñadas para destacar tu contenido.',
+    id: 'miniaturas',
+    title: 'Edición de miniaturas',
+    description: [
+      'Una buena miniatura compra a los usuarios antes de que lean el título del video.',
+      'Diseño miniaturas con una creatividad única y una infinidad de estilos entre los que puedes elegir el que más se adapte a tu imagen. También puedo inspirarme en el estilo de tu creador de contenido favorito.',
+    ],
+    media: {
+      type: 'beforeAfter',
+      before: '/thumbnail-after.webp',
+      after: '/thumbnail-before.webp',
+    },
   },
 ];
 ---
 
 <section id="servicios" class="services">
   <div class="container-portfolio">
-  <h2 class="section-title">Servicios</h2>
+    <h2 class="section-title">Servicios</h2>
 
-    <div class="services-grid">
-      <!-- Columna 1: Servicios -->
-      <div class="services-list">
-        {services.map((service, index) => (
-          <button
-            class:list={['service-card', { active: index === 0 }]}
-            data-service={service.id}
-          >
-            <span class="service-number">0{index + 1}</span>
-            <span class="service-name">{service.title}</span>
-          </button>
-        ))}
+    <div class="services-nav" role="group" aria-label="Servicios">
+        {
+          services.map((service, index) => (
+            <button
+              type="button"
+              class:list={['service-tab', { active: index === 0 }]}
+              data-service={service.id}
+              aria-pressed={index === 0}
+            >
+              <span class="service-number">{String(index + 1).padStart(2, '0')}</span>
+              {service.title}
+            </button>
+          ))
+        }
       </div>
 
-      <!-- Columna 2: Descripción -->
-      <div class="services-description">
-        {services.map((service, index) => (
-          <div
-            class:list={['description-content', { active: index === 0 }]}
-            data-description={service.id}
-          >
-            <p set:html={service.description}></p>
-          </div>
-        ))}
-      </div>
+      <div class="services-content">
+        {
+          services.map((service, index) => (
+            <article
+              id={`service-panel-${service.id}`}
+              class:list={['service-panel', { active: index === 0 }]}
+              data-panel={service.id}
+            >
+              <h3 class="service-title">{service.title}</h3>
+
+              {service.description.map((paragraph) => (
+                <p class="service-description">{paragraph}</p>
+              ))}
+
+              {
+                service.media?.type === 'beforeAfter' && (
+                  <div
+                    class="compare"
+                    style="--pos: 0%"
+                    role="slider"
+                    aria-label="Comparación antes y después"
+                    aria-valuemin="0"
+                    aria-valuemax="100"
+                    aria-valuenow="0"
+                    tabindex="0"
+                  >
+                    <img
+                      class="compare-image"
+                      src={service.media.before}
+                      alt="Miniatura antes de la edición"
+                      width="1280"
+                      height="720"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <img
+                      class="compare-image compare-image--after"
+                      src={service.media.after}
+                      alt="Miniatura después de la edición"
+                      width="1280"
+                      height="720"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div class="compare-handle" aria-hidden="true">
+                      <div class="compare-grip">◄ ►</div>
+                    </div>
+                  </div>
+                )
+              }
+            </article>
+          ))
+        }
     </div>
   </div>
 </section>
 
 <script>
   function initServices() {
-    const cards = document.querySelectorAll('.service-card');
-    const descriptions = document.querySelectorAll('.description-content');
+    const section = document.getElementById('servicios');
+    if (!section) return;
 
-    cards.forEach((card) => {
-      card.addEventListener('click', () => {
-        const serviceId = card.getAttribute('data-service');
+    const tabs = section.querySelectorAll('[data-service]');
+    const panels = section.querySelectorAll('[data-panel]');
 
-        // Update cards
-        cards.forEach((c) => c.classList.remove('active'));
-        card.classList.add('active');
-
-        // Update descriptions
-        descriptions.forEach((d) => {
-          d.classList.toggle('active', d.getAttribute('data-description') === serviceId);
-        });
+    const activate = (id) => {
+      tabs.forEach((tab) => {
+        const isActive = tab.dataset.service === id;
+        tab.classList.toggle('active', isActive);
+        tab.setAttribute('aria-pressed', String(isActive));
       });
+      panels.forEach((panel) => {
+        panel.classList.toggle('active', panel.dataset.panel === id);
+      });
+    };
+
+    tabs.forEach((tab) => {
+      tab.addEventListener('click', () => activate(tab.dataset.service));
+    });
+
+    const compare = section.querySelector('[role="slider"]');
+    if (!compare) return;
+
+    const rect = () => compare.getBoundingClientRect();
+    const apply = (pct) => {
+      const clamped = Math.min(100, Math.max(0, pct));
+      compare.style.setProperty('--pos', `${clamped}%`);
+      compare.setAttribute('aria-valuenow', String(Math.round(clamped)));
+    };
+    const fromPointer = (clientX) => {
+      apply(((clientX - rect().left) / rect().width) * 100);
+    };
+
+    let dragging = false;
+
+    compare.addEventListener('pointerdown', (event) => {
+      dragging = true;
+      compare.setPointerCapture(event.pointerId);
+      fromPointer(event.clientX);
+    });
+
+    compare.addEventListener('pointermove', (event) => {
+      if (!dragging) return;
+      fromPointer(event.clientX);
+    });
+
+    ['pointerup', 'pointercancel'].forEach((type) => {
+      compare.addEventListener(type, () => {
+        dragging = false;
+      });
+    });
+
+    compare.addEventListener('keydown', (event) => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault();
+      const step = 4;
+      const current = parseFloat(compare.style.getPropertyValue('--pos')) || 50;
+      const next = event.key === 'ArrowLeft' ? current - step : current + step;
+      apply(next);
     });
   }
 
-  // Run on page load
   document.addEventListener('DOMContentLoaded', initServices);
-
-  // Run on View Transitions navigation
-  document.addEventListener('astro:after-swap', initServices);
 </script>
 
 <style>
   .services {
     padding: 6rem 0;
-    text-align: center;
   }
 
-  .services-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
-    max-width: 72rem;
-    margin-inline: auto;
-  }
-
-  /* Columna 1: Lista de servicios */
-  .services-list {
+  .services-nav {
     display: flex;
-    flex-direction: column;
-    margin-inline: auto;
-    width: 100%;
-  }
-
-  .service-card {
-    display: flex;
-    align-items: center;
+    flex-wrap: wrap;
     justify-content: center;
-    gap: 1rem;
-    padding: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .service-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 1.1rem;
+    border: 1px solid rgb(255 255 255 / 0.18);
+    margin: -1px 0 0 -1px;
     background: transparent;
-    border: 1px solid rgb(255 255 255 / 0.08);
-    border-radius: 0;
-    margin-bottom: -1px;
-    color: rgb(255 255 255 / 0.5);
+    color: rgb(255 255 255 / 0.6);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-align: left;
-    width: 100%;
-    font-family: inherit;
-    z-index: 1;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
   }
 
-  .service-card.active {
-    z-index: 2;
+  .service-tab:hover {
+    color: #fff;
   }
 
-  .service-card:hover {
-    border-color: rgb(255 255 255 / 0.15);
-    color: rgb(255 255 255 / 0.7);
-  }
-
-  .service-card.active {
-    border-color: #fafafa;
-    background: rgb(255 255 255 / 0.08);
-    color: white;
+  .service-tab.active {
+    background: #fafafa;
+    color: #0a0a0a;
   }
 
   .service-number {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.05em;
     opacity: 0.4;
   }
 
-  .service-card.active .service-number {
-    color: #ffffff;
+  .service-tab.active .service-number {
     opacity: 1;
   }
 
-  .service-name {
-    font-size: 1rem;
-    font-weight: 500;
+  .service-tab:focus-visible {
+    outline: 2px solid #fafafa;
+    outline-offset: -2px;
   }
 
-  /* Columna 2: Descripción */
-  .services-description {
+  .service-panel {
+    display: none;
+  }
+
+  .service-panel.active {
+    display: block;
+    animation: panel-in 0.4s ease;
+  }
+
+  .service-title {
+    margin-bottom: 1.25rem;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+
+  .service-description {
+    margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: rgb(255 255 255 / 0.7);
+  }
+
+  .compare {
     position: relative;
-    min-height: 200px;
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    max-height: 400px;
+    margin-inline: auto;
+    background: #0a0a0a;
+    cursor: ew-resize;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+    outline: none;
+  }
+
+  .compare:focus-visible {
+    outline: 2px solid rgb(255 255 255 / 0.5);
+    outline-offset: 2px;
+  }
+
+  .compare-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+    pointer-events: none;
+  }
+
+  .compare-image--after {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    clip-path: inset(0 0 0 var(--pos));
+  }
+
+  .compare-handle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--pos);
+    width: 2px;
+    background: #ffffff;
+    transform: translateX(-50%);
+    box-shadow: 0 0 12px rgb(0 0 0 / 0.6);
+    pointer-events: none;
+  }
+
+  .compare-grip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .description-content {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(8px);
-    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-  }
-
-  .description-content.active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  .description-content p {
-    font-size: 1.25rem;
-    line-height: 1.7;
-    color: rgb(255 255 255 / 0.65);
-    max-width: 40rem;
-    margin-inline: 0;
-    text-align: left;
-  }
-
-  .description-content .desc-highlight {
-    color: #ffffff;
+    width: 44px;
+    height: 44px;
+    border-radius: 9999px;
+    background: #ffffff;
+    color: #0a0a0a;
+    font-size: 0.7rem;
     font-weight: 700;
+    letter-spacing: -0.05em;
+    box-shadow: 0 2px 10px rgb(0 0 0 / 0.5);
   }
 
-  /* ════════════════════════════════════════
-     Responsive — Desktop
-     ════════════════════════════════════════ */
-  @media (min-width: 768px) {
-    .services-grid {
-      grid-template-columns: 280px 1fr;
-      gap: 3rem;
-      align-items: start;
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
     }
-
-    .service-card {
-      padding: 1.5rem 1.75rem;
-      justify-content: flex-start;
-    }
-
-    .service-name {
-      font-size: 1.125rem;
-    }
-
-    .services-list {
-      margin-inline: 0;
+    to {
+      opacity: 1;
+      transform: translateY(0);
     }
   }
 
-  /* ════════════════════════════════════════
-     Responsive — Mobile
-     ════════════════════════════════════════ */
   @media (max-width: 767px) {
     .services {
       padding: 4rem 0;
-    }
-
-    .services-description {
-      order: -1;
-      min-height: auto;
-      padding-bottom: 2rem;
-    }
-
-    .description-content {
-      position: relative;
-    }
-
-    .description-content:not(.active) {
-      display: none;
     }
   }
 </style>
