@@ -3,42 +3,94 @@ interface Props {
   title: string;
   description?: string;
   fullHeight?: boolean;
+  image?: string;
 }
 
 const {
   title,
-  description = 'Portfolio de edición de video e imagen',
+  description = 'Editor de video especializado en gaming. Edición profesional de videos largos, shorts y miniaturas para creadores de contenido y streamers.',
   fullHeight = false,
+  image = '/hero-logo.webp',
 } = Astro.props;
+
+const SITE_URL = import.meta.env.SITE_URL as string | undefined;
+const canonical = SITE_URL ? new URL(Astro.url.pathname, SITE_URL).href : undefined;
+const ogImage = SITE_URL ? new URL(image, SITE_URL).href : image;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: 'Glassito',
+  description,
+  ...(SITE_URL ? { url: SITE_URL } : {}),
+  image: ogImage,
+  knowsAbout: [
+    'Edición de video',
+    'YouTube Shorts',
+    'Miniaturas para YouTube',
+    'Gaming',
+    'Streaming',
+  ],
+};
 ---
 
 <!doctype html>
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Glassito" />
+    <meta name="theme-color" content="#0a0a0a" />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Glassito" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <title>{title}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://i.ytimg.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
-    <title>{title}</title>
+    <link rel="preload" as="image" href="/hero-logo.webp" />
+    <script type="application/ld+json" set:html={JSON.stringify(schema)} />
   </head>
   <body class="min-h-screen">
     <nav class="fixed top-0 z-50 w-full border-b border-white/10 bg-black">
       <div class="container-portfolio flex h-16 items-center justify-center">
         <div class="flex items-center gap-6">
-          <a href="/projects" class="text-sm text-white/70 transition-colors hover:text-white">
-            Proyectos
+          <a
+            href="/#inicio"
+            data-section="inicio"
+            class="nav-link text-sm text-white/70 transition-colors hover:text-white"
+          >
+            Inicio
           </a>
-          <a href="/about" class="text-sm text-white/70 transition-colors hover:text-white">
-            Sobre mí
+          <a
+            href="/#portfolio"
+            data-section="portfolio"
+            class="nav-link text-sm text-white/70 transition-colors hover:text-white"
+          >
+            Portfolio
           </a>
-          <a href="/contact" class="text-sm text-white/70 transition-colors hover:text-white">
-            Contacto
+          <a
+            href="/#clientes"
+            data-section="clientes"
+            class="nav-link text-sm text-white/70 transition-colors hover:text-white"
+          >
+            Clientes
           </a>
         </div>
       </div>
@@ -50,7 +102,7 @@ const {
 
     <footer class="border-t border-white/10 py-8">
       <div class="container-portfolio text-center text-sm text-white/50">
-        <p>&copy; {new Date().getFullYear()} — Editado con pasión</p>
+        <p>&copy; {new Date().getFullYear()} — Made by Glassito</p>
       </div>
     </footer>
   </body>
@@ -59,3 +111,64 @@ const {
 <style is:global>
   @import '../styles/global.css';
 </style>
+
+<style>
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link.active {
+    color: #ffffff;
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -0.375rem;
+    height: 2px;
+    background: currentColor;
+    border-radius: 9999px;
+  }
+</style>
+
+<script>
+  const links = document.querySelectorAll<HTMLAnchorElement>('.nav-link');
+
+  const sectionIds = ['inicio', 'portfolio', 'clientes'];
+  const sections = sectionIds
+    .map((id) => document.getElementById(id))
+    .filter((el): el is HTMLElement => Boolean(el));
+
+  function updateActive() {
+    const offset = Math.min(window.innerHeight * 0.35, 200);
+    let current = 'inicio';
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= offset) current = section.id;
+    }
+    links.forEach((link) => {
+      const isActive = link.dataset.section === current;
+      link.classList.toggle('active', isActive);
+      if (isActive) link.setAttribute('aria-current', 'true');
+      else link.removeAttribute('aria-current');
+    });
+  }
+
+  let ticking = false;
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          updateActive();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    },
+    { passive: true }
+  );
+
+  updateActive();
+</script>
