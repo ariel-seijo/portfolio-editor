@@ -1,63 +1,51 @@
 ---
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import ClientCard from './ClientCard.astro';
-import { fetchChannels } from '../lib/youtube';
 
-const CLIENT_HANDLES = [
+const FALLBACK_HANDLES = [
   'cesaroxx3561',
   'deadlymark5740',
   'hilyra',
-  'CharlyScoTT',
+  'charlyscott',
   'foxyadc',
-  'Wanderingnovagaming',
-  'HazukyTV',
+  'wanderingnovagaming',
+  'hazukytv',
   'neorodriguezmx9',
-  'DUXTERTV',
-  'ZAXrevengeance',
+  'duxtertv',
+  'zaxrevengeance',
 ];
 
-async function persistAvatar(handle: string, remoteUrl: string): Promise<string> {
-  try {
-    const res = await fetch(remoteUrl);
-    if (!res.ok) return remoteUrl;
-
-    const buf = Buffer.from(await res.arrayBuffer());
-    const fileName = `${handle.toLowerCase()}.jpg`;
-    const dir = join(process.cwd(), 'public', 'clients');
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, fileName), buf);
-
-    return `/clients/${fileName}`;
-  } catch {
-    return remoteUrl;
-  }
+interface CachedClient {
+  handle: string;
+  title: string;
+  channelUrl: string;
+  file: string;
 }
 
-const results = await fetchChannels(CLIENT_HANDLES);
+const CLIENTS_DIR = join(process.cwd(), 'public', 'clients');
 
-const clients = await Promise.all(
-  results.map(async (channel, index) => {
-    const handle = CLIENT_HANDLES[index];
+let cached: CachedClient[] = [];
+try {
+  cached = JSON.parse(readFileSync(join(CLIENTS_DIR, '_data.json'), 'utf-8')) as CachedClient[];
+} catch {
+  cached = [];
+}
 
-    if (channel) {
-      const photoUrl = await persistAvatar(handle, channel.thumbnailUrl);
-      return {
-        name: channel.title,
-        handle,
-        photoUrl,
-        channelUrl: channel.channelUrl,
-      };
-    }
+const byHandle = new Map(cached.map((c) => [c.handle, c]));
 
-    return {
-      name: `@${handle}`,
-      handle,
-      photoUrl: '',
-      channelUrl: `https://www.youtube.com/@${handle}`,
-    };
-  })
-);
+const clients = FALLBACK_HANDLES.map((handle) => {
+  const entry = byHandle.get(handle);
+  const file = `${handle}.jpg`;
+  const photoAvailable = existsSync(join(CLIENTS_DIR, file));
+
+  return {
+    name: entry?.title ?? `@${handle}`,
+    handle,
+    photoUrl: photoAvailable ? `/clients/${file}` : '',
+    channelUrl: entry?.channelUrl ?? `https://www.youtube.com/@${handle}`,
+  };
+});
 ---
 
 <section id="clientes" class="clients">
