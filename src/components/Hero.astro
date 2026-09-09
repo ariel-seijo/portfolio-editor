@@ -33,7 +33,7 @@ const row7Boxes = makeRow();
 <!-- ═══════════════════════════════════════════════════════════════
      HERO — Wall of content in motion
      ═══════════════════════════════════════════════════════════════ -->
-<section class="hero">
+<section id="inicio" class="hero">
   <!-- Background: 7 marquee rows -->
   <div class="hero-marquee" aria-hidden="true">
     <MarqueeRow direction="left" speed={160} rotation={-2} boxes={row1Boxes} />
@@ -60,7 +60,9 @@ const row7Boxes = makeRow();
       src="/hero-logo.webp"
       alt="Glassito logo"
       class="hero-logo"
-      loading="eager"
+      width="143"
+      height="139"
+      fetchpriority="high"
       decoding="async"
     />
     <h1 class="hero-title">GLASSITO</h1>
@@ -107,7 +109,7 @@ const row7Boxes = makeRow();
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 1rem;
+    gap: 0.5rem;
     opacity: 0.85;
     overflow: hidden;
   }
@@ -174,6 +176,10 @@ const row7Boxes = makeRow();
   }
 
   .hero-actions {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -248,11 +254,11 @@ const row7Boxes = makeRow();
     }
 
     .hero-logo {
-      width: 140px;
+      width: 90vw;
     }
 
     .hero-title {
-      font-size: clamp(1.9rem, 9.6vw, 3.4rem);
+      font-size: clamp(2.85rem, 14.4vw, 5.1rem);
     }
 
     .hero-subtitle {
