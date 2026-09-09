@@ -58,8 +58,7 @@ CLAUDE.md
 .vercel/
 .netlify/
 
-# cloudinary (local cache)
-.cloudinary/
+
 
 # generated client avatars (rebuilt on every build)
 public/clients/

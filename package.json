@@ -14,7 +14,6 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.2.10",
-    "cloudinary": "^2.5.1",
     "tailwindcss": "^4.3.3"
   },
   "allowScripts": {
