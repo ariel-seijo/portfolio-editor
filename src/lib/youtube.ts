@@ -15,7 +15,6 @@ async function fetchChannelByHandle(
   handle: string
 ): Promise<YouTubeChannel | null> {
   if (!API_KEY) {
-    console.warn(`[youtube] No YOUTUBE_API_KEY — skipping ${handle}`);
     return null;
   }
 
@@ -28,9 +27,6 @@ async function fetchChannelByHandle(
     const res = await fetch(url);
 
     if (!res.ok) {
-      console.error(
-        `[youtube] Request failed for @${handle}: ${res.status} ${res.statusText}`
-      );
       return null;
     }
 
@@ -51,7 +47,6 @@ async function fetchChannelByHandle(
     const item = data.items?.[0];
 
     if (!item) {
-      console.warn(`[youtube] No channel found for @${handle}`);
       return null;
     }
 
@@ -67,8 +62,7 @@ async function fetchChannelByHandle(
         snippet.thumbnails?.default?.url,
       channelUrl: `https://www.youtube.com/@${stripAt(handle)}`,
     };
-  } catch (error) {
-    console.error(`[youtube] Fetch error for @${handle}:`, error);
+  } catch {
     return null;
   }
 }
